@@ -18,9 +18,9 @@ class UserManager(BaseUserManager):
 
         user_obj = self.model(
             phone=phone,
-            is_active=is_active,
-            is_staff=is_staff,
-            is_admin=is_admin,
+            active=is_active,
+            staff=is_staff,
+            admin=is_admin,
             **kwargs
         )
         user_obj.set_password(password)
@@ -80,7 +80,7 @@ class User(AbstractBaseUser):
     role = models.CharField(max_length=2, choices=Role.choices, null=True)
     full_name = models.CharField(max_length=100, null=True)
     phone = models.CharField(validators=[phone_regex], max_length=12, unique=True)
-    password = models.CharField(max_length=50, null=True)
+    password = models.CharField(max_length=100, null=True)
 
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
@@ -96,6 +96,12 @@ class User(AbstractBaseUser):
 
     def get_full_name(self):
         return self.full_name + self.phone
+
+    def has_perm(self, perm, obj=None):
+        return self.admin
+
+    def has_module_perms(self, app_label):
+        return self.admin
 
     @property
     def is_staff(self):
