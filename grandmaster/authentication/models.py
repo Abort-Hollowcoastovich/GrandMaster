@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.validators import RegexValidator
 
+
 class UserManager(BaseUserManager):
     def create_user(
         self,
@@ -28,20 +29,20 @@ class UserManager(BaseUserManager):
         return user_obj
 
     def create_staffuser(
-        self, 
-        phone, 
-        password=None, 
-        is_active=True, 
-        is_stuff=True, 
+        self,
+        phone,
+        password=None,
+        is_active=True,
+        is_stuff=True,
         **kwargs
     ):
         user = self.create_user(
-            phone, 
+            phone,
             password=password,
             is_active=is_active,
-            is_staff=is_stuff, 
+            is_staff=is_stuff,
             **kwargs
-            )
+        )
         return user
 
     def create_superuser(
@@ -79,7 +80,8 @@ class User(AbstractBaseUser):
 
     role = models.CharField(max_length=2, choices=Role.choices, null=True)
     full_name = models.CharField(max_length=100, null=True)
-    phone = models.CharField(validators=[phone_regex], max_length=12, unique=True)
+    phone = models.CharField(
+        validators=[phone_regex], max_length=12, unique=True)
     password = models.CharField(max_length=100, null=True)
 
     active = models.BooleanField(default=True)
@@ -114,3 +116,17 @@ class User(AbstractBaseUser):
     @property
     def is_active(self):
         return self.active
+
+
+class PhoneOTP(models.Model):
+    phone_regex = RegexValidator(
+        regex=r"^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}",
+        message="Phone number must be entered in the format: ...",
+    )
+    phone = models.CharField(validators=[phone_regex], max_length=12, unique=True)
+    otp = models.CharField(max_length=9, blank=True, null=True)
+    count = models.IntegerField(default=0)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.phone + 'is sent' + str(self.count)
