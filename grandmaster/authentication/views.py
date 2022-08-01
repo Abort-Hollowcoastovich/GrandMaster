@@ -4,12 +4,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .utils import send_sms_code, generate_code
-from .models import PhoneOTP
+from .models import PhoneOTP, User
 
 MAX_SEND_TIMES = 10
 SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK = 50
 SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT = 600
+OTP_EXPIRATION_SECONDS = 20
 
 
 class ValidatePhoneSendOTP(APIView):
@@ -33,8 +36,10 @@ class ValidatePhoneSendOTP(APIView):
                         'details': 'Wait 50 seconds to reqest new code'
                     }, status=status.HTTP_429_TOO_MANY_REQUESTS)
                 else:
-                    if datetime.datetime.now() - last.last_modified.replace(tzinfo=None) < SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT:
+                    if datetime.datetime.now() - last.last_modified.replace(tzinfo=None) < datetime.timedelta(seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT):
                         last.count += 1
+                    last.used = False
+                    last.otp = code
                     last.save()
                     send_sms_code(phone, code)
                     return Response({
@@ -55,4 +60,60 @@ class ValidatePhoneSendOTP(APIView):
             return Response({
                 'status': False,
                 'details': 'Phone number is not given in request'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ValidateOTP(APIView):
+    def post(self, request, *args, **kwargs):
+        phone_number = request.data.get('phone_number')
+        otp = request.data.get('otp')
+        if phone_number and otp:
+            phone_number = str(phone_number)
+            otp = str(otp)
+            phone_otp = PhoneOTP.objects.filter(phone=phone_number)
+            if phone_otp.exists():
+                phone_otp = phone_otp.first()
+                if not phone_otp.is_used:
+                    if otp == phone_otp.otp:
+                        if datetime.datetime.now() - phone_otp.last_modified.replace(tzinfo=None) < datetime.timedelta(seconds=OTP_EXPIRATION_SECONDS):
+                            phone_otp.used = True
+                            phone_otp.save()
+                            user = User.objects.filter(phone=phone_number)
+                            if user.exists():
+                                user = user.first()
+                            else:
+                                # TODO: Получить имя пользователя и роль из битрикса
+                                full_name = 'Abobov Aboba Abobovich'
+                                role = User.Role.STUDENT
+                                user = User.objects.create_user(
+                                    phone=phone_number, full_name=full_name, role=role)
+                            refresh = RefreshToken.for_user(user)
+                            return Response({
+                                'refresh': str(refresh),
+                                'access': str(refresh.access_token)
+                            }, status=status.HTTP_200_OK)
+                        else:
+                            return Response({
+                                'status': False,
+                                'details': 'Your otp has expired'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return Response({
+                            'status': False,
+                            'details': 'Wrong otp'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({
+                        'status': False,
+                        'details': 'You can not use same otp more then once, get new otp and try again'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({
+                    'status': False,
+                    'details': 'You must validate phone and send otp first'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({
+                'status': False,
+                'details': 'You must specify phone number and otp'
             }, status=status.HTTP_400_BAD_REQUEST)

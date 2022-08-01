@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from msilib.schema import Property
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.validators import RegexValidator
@@ -127,6 +128,11 @@ class PhoneOTP(models.Model):
     otp = models.CharField(max_length=9, blank=True, null=True)
     count = models.IntegerField(default=0)
     last_modified = models.DateTimeField(auto_now=True)
+    used = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.phone + 'is sent' + str(self.count)
+
+    @property
+    def is_used(self):
+        return self.used
