@@ -10,8 +10,8 @@ User = get_user_model()
 
 admin.site.register(PhoneOTP)
 
-class UserAdmin(BaseUserAdmin):
 
+class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
@@ -42,6 +42,4 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 
-
-# Remove Group Model from admin. We're not using it.
 admin.site.unregister(Group)

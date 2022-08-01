@@ -1,6 +1,11 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
 from .views import *
 
+router = DefaultRouter()
+router.register('', Upload, basename="upload")
+
 urlpatterns = [
-    path('hello/', Hello.as_view()),
+    path('', include(router.urls)),
 ]
