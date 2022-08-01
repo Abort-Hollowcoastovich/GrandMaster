@@ -2,6 +2,7 @@ import datetime
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -12,7 +13,7 @@ from .models import PhoneOTP, User
 MAX_SEND_TIMES = 10
 SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK = 50
 SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT = 600
-OTP_EXPIRATION_SECONDS = 20
+OTP_EXPIRATION_SECONDS = 300
 
 
 class ValidatePhoneSendOTP(APIView):
@@ -33,7 +34,7 @@ class ValidatePhoneSendOTP(APIView):
                 elif datetime.datetime.now() - last.last_modified.replace(tzinfo=None) < datetime.timedelta(seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK):
                     return Response({
                         'status': False,
-                        'details': 'Wait 50 seconds to reqest new code'
+                        'details': f'Wait {SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK} seconds to reqest new code'
                     }, status=status.HTTP_429_TOO_MANY_REQUESTS)
                 else:
                     if datetime.datetime.now() - last.last_modified.replace(tzinfo=None) < datetime.timedelta(seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT):
@@ -63,6 +64,8 @@ class ValidatePhoneSendOTP(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
+# request {'phone_number': int, 'otp': int}
+# response {'refresh': str, 'access': str}
 class ValidateOTP(APIView):
     def post(self, request, *args, **kwargs):
         phone_number = request.data.get('phone_number')
