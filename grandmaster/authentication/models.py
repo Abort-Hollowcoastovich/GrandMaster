@@ -131,7 +131,7 @@ class PhoneOTP(models.Model):
     used = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return self.phone + 'is sent' + str(self.count)
+        return str(self.phone) + 'is sent' + str(self.count)
 
     @property
     def is_used(self):
