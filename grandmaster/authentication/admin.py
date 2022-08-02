@@ -10,16 +10,13 @@ User = get_user_model()
 
 admin.site.register(PhoneOTP)
 
-class UserAdmin(BaseUserAdmin):
 
-    # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin
-    # that reference specific fields on auth.User.
+class UserAdmin(BaseUserAdmin):
     list_display = ('full_name', 'phone', 'admin',)
-    list_filter = ('staff', 'active', 'admin',)
+    list_filter = ('active', 'admin',)
     fieldsets = (
         (None, {'fields': ('phone', 'password', 'full_name')}),
-        ('Permissions', {'fields': ('admin', 'staff', 'active')}),
+        ('Permissions', {'fields': ('admin', 'active', 'groups')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -42,6 +39,4 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 
-
-# Remove Group Model from admin. We're not using it.
 admin.site.unregister(Group)
