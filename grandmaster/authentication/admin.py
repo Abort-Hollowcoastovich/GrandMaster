@@ -12,8 +12,11 @@ admin.site.register(PhoneOTP)
 
 
 class UserAdmin(BaseUserAdmin):
+    # То, что отображается в просмотре в виде списка
     list_display = ('full_name', 'phone', 'admin',)
+    # То, по чему можно фильтровать этот список
     list_filter = ('active', 'admin',)
+    # Поля при просмотре конкретного объекта
     fieldsets = (
         (None, {'fields': ('phone', 'password', 'full_name')}),
         ('Permissions', {'fields': ('admin', 'active', 'groups')}),
@@ -27,7 +30,9 @@ class UserAdmin(BaseUserAdmin):
          ),
     )
 
+    # Поля, по которым можно сортировать при просмотре в виде списка
     search_fields = ('phone', 'full_name')
+    # Поля, по которым идет порядок просмотра в виде списка
     ordering = ('phone', 'full_name')
     filter_horizontal = ()
 
@@ -38,5 +43,3 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
-
-admin.site.unregister(Group)
