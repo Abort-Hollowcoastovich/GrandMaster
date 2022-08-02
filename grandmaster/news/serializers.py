@@ -10,10 +10,21 @@ class NewsImagesSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     images = NewsImagesSerializer(many=True, read_only=True)
-
+    
     class Meta:
         model = News
-        fields = ['pk', 'title', 'description', 'images', 'order', 'cover']
+        fields = [
+            'pk',
+            'title',
+            'description',
+            'created_at',
+            'viewed_times',
+            'order',
+            'hidden',
+            'cover',
+            'images'
+        ]
+        read_only_fields = ['pk', 'viewed_times', 'created_at']
 
     def create(self, validated_data):
         images_data = self.context.get('view').request.FILES
