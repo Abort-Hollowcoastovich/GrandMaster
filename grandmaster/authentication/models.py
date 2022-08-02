@@ -10,7 +10,6 @@ class UserManager(BaseUserManager):
         self,
         phone,
         password=None,
-        is_staff=False,
         is_active=True,
         is_admin=False,
         **kwargs
@@ -21,7 +20,6 @@ class UserManager(BaseUserManager):
         user_obj = self.model(
             phone=phone,
             active=is_active,
-            staff=is_staff,
             admin=is_admin,
             **kwargs
         )
@@ -34,7 +32,6 @@ class UserManager(BaseUserManager):
         phone,
         password=None,
         is_active=True,
-        is_stuff=True,
         is_admin=True,
         **kwargs
     ):
@@ -42,7 +39,6 @@ class UserManager(BaseUserManager):
             phone,
             password=password,
             is_active=is_active,
-            is_staff=is_stuff,
             is_admin=is_admin,
             **kwargs
         )
