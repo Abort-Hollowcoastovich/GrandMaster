@@ -10,7 +10,7 @@ GROUPS = {
         "news": ["add", "delete", "change", "view"],
     },
     "Moderator": {
-        "news": ["view", ],
+        "news": ["add", "delete", "change", "view"],
     },
     "Student": {
         "news": ["view"],

@@ -1,5 +1,11 @@
 from django.db import models
-from .utils import PathAndHash
+
+from utils.image_path import PathAndHash
+
+
+class NewsPathAndHash(PathAndHash):
+    def __init__(self, path):
+        super().__init__('news/' + path)
 
 
 class News(models.Model):
@@ -9,7 +15,7 @@ class News(models.Model):
     viewed_times = models.IntegerField(default=0)
     order = models.IntegerField(blank=False)
     hidden = models.BooleanField(default=False)
-    cover = models.ImageField(upload_to=PathAndHash('news/covers'))
+    cover = models.ImageField(upload_to=NewsPathAndHash('covers'))
 
     class Meta:
         db_table = 'news'
@@ -21,7 +27,7 @@ class News(models.Model):
 
 class NewsImage(models.Model):
     news = models.ForeignKey(to=News, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to=PathAndHash('news/images'))
+    image = models.ImageField(upload_to=NewsPathAndHash('images'))
 
     class Meta:
         db_table = 'news_images'

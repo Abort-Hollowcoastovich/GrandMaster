@@ -1,14 +1,15 @@
 from __future__ import unicode_literals
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib import admin
 
-from .models import PhoneOTP
+from .models import PhoneOTP, UserProfile, Document
+
 User = get_user_model()
 
-
 admin.site.register(PhoneOTP)
+admin.site.register(UserProfile)
+admin.site.register(Document)
 
 
 class UserAdmin(BaseUserAdmin):
@@ -18,11 +19,10 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('active', 'admin',)
     # Поля при просмотре конкретного объекта
     fieldsets = (
-        (None, {'fields': ('phone', 'password', 'full_name')}),
+        (None, {'fields': ('phone', 'password', 'full_name', 'parents', 'role')}),
         ('Permissions', {'fields': ('admin', 'active', 'groups')}),
     )
-    # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
-    # overrides get_fieldsets to use this attribute when creating a user.
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),

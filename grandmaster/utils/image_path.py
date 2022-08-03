@@ -10,5 +10,5 @@ class PathAndHash(object):
         self.path = path
 
     def __call__(self, instance, filename):
-        filename = uuid.uuid4().hex + '.' + filename.split('.')[-1]
+        filename = str(instance) + '_' + uuid.uuid4().hex + '.' + filename.split('.')[-1]
         return os.path.join(self.path, filename)
