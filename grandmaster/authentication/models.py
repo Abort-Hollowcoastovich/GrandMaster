@@ -1,18 +1,16 @@
-from __future__ import unicode_literals
-
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
 from django.core.validators import RegexValidator
+from django.db import models
 
 
 class UserManager(BaseUserManager):
     def create_user(
-        self,
-        phone,
-        password=None,
-        is_active=True,
-        is_admin=False,
-        **kwargs
+            self,
+            phone,
+            password=None,
+            is_active=True,
+            is_admin=False,
+            **kwargs
     ):
         if not phone:
             raise ValueError("Users must have a phone number")
@@ -28,12 +26,12 @@ class UserManager(BaseUserManager):
         return user_obj
 
     def create_superuser(
-        self,
-        phone,
-        password=None,
-        is_active=True,
-        is_admin=True,
-        **kwargs
+            self,
+            phone,
+            password=None,
+            is_active=True,
+            is_admin=True,
+            **kwargs
     ):
         user = self.create_user(
             phone,
@@ -46,32 +44,38 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    class Role(models.TextChoices):
-        STUDENT = "ST"
-        PARENT = "PR"
-        TRAINER = "TR"
-        MODERATOR = "MD"
-        ADMINISTRATOR = "AD"
+    class Group:
+        ADMINISTRATOR = "Administrator"
+        MODERATOR = "Moderator"
+        STUDENT = "Student"
+        PARENT = "Parent"
+        TRAINER = "Trainer"
 
     phone_regex = RegexValidator(
         regex=r"^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}",
-        message="Phone number must be entered in the format: ...",
+        message='Phone number must be entered in the format: ...',
     )
 
-    role = models.CharField(max_length=2, choices=Role.choices, null=True)
+    parents = models.ManyToManyField('self', related_name='children', symmetrical=False)
+    trainer = models.ForeignKey('self', related_name='students', on_delete=models.DO_NOTHING)
+
     full_name = models.CharField(max_length=100, null=True)
-    phone = models.CharField(
-        validators=[phone_regex], max_length=12, unique=True)
+    phone = models.CharField(validators=[phone_regex], max_length=12, unique=True)
     password = models.CharField(max_length=100, null=True)
 
     active = models.BooleanField(default=True)
     admin = models.BooleanField(default=False)
     superuser = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "phone"
+    USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+    def __contains__(self, group_name):
+        # Example: User.Group.PARENT in user_object
+        group, created = Group.objects.get_or_create(name=group_name)
+        return group in self.groups.all()
 
     def __str__(self):
         return self.phone
@@ -104,8 +108,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class PhoneOTP(models.Model):
     phone_regex = RegexValidator(
-        regex=r"^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}",
-        message="Phone number must be entered in the format: ...",
+        regex=r'^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}',
+        message='Phone number must be entered in the format: ...',
     )
     phone = models.CharField(validators=[phone_regex], max_length=12, unique=True)
     otp = models.CharField(max_length=9, blank=True, null=True)
