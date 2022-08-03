@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
 from django.core.validators import RegexValidator
+from django.db import models
 
 
 class UserManager(BaseUserManager):
@@ -56,12 +56,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         message='Phone number must be entered in the format: ...',
     )
 
-    parents = models.ManyToManyField('self', symmetrical=False, related_name='children')
-    # trainer = models.ManyToManyField('self', related_name='students') TODO: manytomany or foreign key
+    parents = models.ManyToManyField('self', related_name='children', symmetrical=False)
+    trainer = models.ForeignKey('self', related_name='students', on_delete=models.DO_NOTHING)
 
     full_name = models.CharField(max_length=100, null=True)
-    phone = models.CharField(
-        validators=[phone_regex], max_length=12, unique=True)
+    phone = models.CharField(validators=[phone_regex], max_length=12, unique=True)
     password = models.CharField(max_length=100, null=True)
 
     active = models.BooleanField(default=True)

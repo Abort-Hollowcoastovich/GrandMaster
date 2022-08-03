@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authentication',
-    'news'
+    'news',
+    'profiles',
 ]
 
 MIDDLEWARE = [
@@ -162,7 +163,6 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'authentication.User'
-
 
 # Custom settings
 

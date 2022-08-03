@@ -18,7 +18,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100)
     birth_date = models.DateTimeField()
-    # trainer = None TODO: ?
+    trainer = models.CharField(max_length=100)
     city = models.CharField(max_length=200)
     address = models.CharField(max_length=200)
     school = models.CharField(max_length=200)
