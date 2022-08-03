@@ -13,7 +13,7 @@ class News(models.Model):
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     viewed_times = models.IntegerField(default=0)
-    order = models.IntegerField(blank=False)
+    order = models.IntegerField()
     hidden = models.BooleanField(default=False)
     cover = models.ImageField(upload_to=NewsPathAndHash('covers'))
 

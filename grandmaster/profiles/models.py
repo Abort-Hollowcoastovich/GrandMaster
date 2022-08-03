@@ -1,3 +1,5 @@
+from datetime import timedelta, datetime
+
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -53,6 +55,22 @@ class UserProfile(models.Model):
 
     class Meta:
         db_table = 'user_profiles'
+
+    # Допуск. Эти поля участвуют в вычислекнии Статуса Допущен/Не допущен.
+    # 1. Поле не должно быть пустым.
+    # (город, адрес)
+    # 2. Эти даты не должны быть меньше, чем Текущая дата + 3 дня.
+    # (медицинская справка дата, страховой полис дата)
+    # 3. Файлы должны быть загружены.
+    # (фотография, паспорт/свидетельство о рождении, полис ОМС, страховой полис, медицинская справка)
+    # 4. Не должно быть неоплаченных счетов с "Датой оплаты" текущая дата + 3 дня
+    @property
+    def is_admitted(self) -> bool:
+        return self.city and \
+               self.address and \
+               (self.med_certificate_date - datetime.now() > timedelta(days=3)) and \
+               (self.insurance_policy_date - datetime.now() > timedelta(days=3)) and \
+               False  # 3, 4
 
 
 class DocumentPathAndHash(PathAndHash):
