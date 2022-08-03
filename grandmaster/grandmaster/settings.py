@@ -162,3 +162,24 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'authentication.User'
+
+
+# Custom settings
+
+GROUPS = {
+    "Administrator": {
+        "news": ["add", "delete", "change", "view"],
+    },
+    "Moderator": {
+        "news": ["add", "delete", "change", "view"],
+    },
+    "Student": {
+        "news": ["view"],
+    },
+    "Parent": {
+        "news": ["view"],
+    },
+    "Trainer": {
+        "news": ["view"],
+    },
+}

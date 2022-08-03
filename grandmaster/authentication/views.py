@@ -1,14 +1,12 @@
 import datetime
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .utils import send_sms_code, generate_code
 from .models import PhoneOTP, User
+from .utils import send_sms_code, generate_code
 
 MAX_SEND_TIMES = 10
 SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK = 50
@@ -64,12 +62,12 @@ class ValidatePhoneSendOTP(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
-# request {'phone_number': int, 'otp': int}
+# request {'phone_number': int, 'code': int}
 # response {'refresh': str, 'access': str}
 class ValidateOTP(APIView):
     def post(self, request, *args, **kwargs):
         phone_number = request.data.get('phone_number')
-        otp = request.data.get('otp')
+        otp = request.data.get('code')
         if phone_number and otp:
             phone_number = str(phone_number)
             otp = str(otp)
@@ -86,10 +84,9 @@ class ValidateOTP(APIView):
                                 user = user.first()
                             else:
                                 # TODO: Получить имя пользователя и роль из битрикса
-                                full_name = 'Abobov Aboba Abobovich'
-                                role = User.Role.STUDENT
-                                user = User.objects.create_user(
-                                    phone=phone_number, full_name=full_name, role=role)
+
+                                user = User.objects.create_user(phone=phone_number, full_name='Abobov Aboba Abobovich')
+
                             refresh = RefreshToken.for_user(user)
                             return Response({
                                 'refresh': str(refresh),

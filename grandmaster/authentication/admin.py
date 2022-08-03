@@ -3,13 +3,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
 from django.contrib import admin
 
-from .models import PhoneOTP, UserProfile, Document
+from .models import PhoneOTP
 
 User = get_user_model()
-
-admin.site.register(PhoneOTP)
-admin.site.register(UserProfile)
-admin.site.register(Document)
 
 
 class UserAdmin(BaseUserAdmin):
@@ -42,4 +38,5 @@ class UserAdmin(BaseUserAdmin):
         return super(UserAdmin, self).get_inline_instances(request, obj)
 
 
+admin.site.register(PhoneOTP)
 admin.site.register(User, UserAdmin)
