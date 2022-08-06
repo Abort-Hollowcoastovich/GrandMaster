@@ -41,6 +41,7 @@ class ValidatePhoneSendOTP(APIView):
                     last.otp = code
                     last.save()
                     send_sms_code(phone, code)
+                    print(code)
                     return Response({
                         'status': True,
                         'details': 'Successfully sended code'
@@ -53,7 +54,7 @@ class ValidatePhoneSendOTP(APIView):
                 send_sms_code(phone, code)
                 return Response({
                     'status': True,
-                    'details': 'Successfully sended code'
+                    'details': 'Successfully sent code'
                 }, status=status.HTTP_200_OK)
         else:
             return Response({
