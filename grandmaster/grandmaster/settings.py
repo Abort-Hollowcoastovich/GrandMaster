@@ -75,6 +75,9 @@ TEMPLATES = [
     },
 ]
 
+FILE_UPLOAD_HANDLERS = ["django.core.files.uploadhandler.MemoryFileUploadHandler",
+                        "django.core.files.uploadhandler.TemporaryFileUploadHandler"]
+
 WSGI_APPLICATION = 'grandmaster.wsgi.application'
 
 # Database
@@ -174,11 +177,9 @@ AUTH_USER_MODEL = 'authentication.User'
 GROUPS = {
     "Administrator": {
         "news": ["add", "delete", "change", "view"],
-        "documents": ["view"]
     },
     "Moderator": {
         "news": ["add", "delete", "change", "view"],
-        "documents": ["view"]
     },
     "Student": {
         "news": ["view"],
@@ -190,3 +191,5 @@ GROUPS = {
         "news": ["view"],
     },
 }
+
+USE_TZ = True

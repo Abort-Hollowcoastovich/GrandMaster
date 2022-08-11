@@ -1,4 +1,5 @@
 import datetime
+from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -6,10 +7,10 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import PhoneOTP, User
-from .utils import send_sms_code, generate_code
+from .utils import send_sms_code, generate_code, is_exists_on_bitrix, get_user_from_bitrix
 
 MAX_SEND_TIMES = 10
-SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK = 50
+SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK = 1  # toDo: change
 SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT = 600
 OTP_EXPIRATION_SECONDS = 300
 
@@ -18,44 +19,49 @@ class ValidatePhoneSendOTP(APIView):
     def post(self, request, *args, **kwargs):
         phone_number = request.data.get('phone_number')
         if phone_number:
-            # TODO: проверка на наличие телефона в битриксе
-            phone = str(phone_number)
-            phone_otp = PhoneOTP.objects.filter(phone__iexact=phone)
-            code = generate_code()
-            if phone_otp.exists():
-                last = phone_otp.first()
-                if last.count > MAX_SEND_TIMES:
-                    return Response({
-                        'status': False,
-                        'details': 'Code send request limit exceeded, contact customer support.'
-                    }, status=status.HTTP_423_LOCKED)
-                elif datetime.datetime.now() - last.last_modified.replace(tzinfo=None) < datetime.timedelta(seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK):
-                    return Response({
-                        'status': False,
-                        'details': f'Wait {SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK} seconds to reqest new code'
-                    }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+            if is_exists_on_bitrix(phone_number):
+                phone_otp = PhoneOTP.objects.filter(phone_number=phone_number)
+                code = generate_code()
+                if phone_otp.exists():
+                    last = phone_otp.first()
+                    if last.count > MAX_SEND_TIMES:
+                        return Response({
+                            'status': False,
+                            'details': 'Code send request limit exceeded, contact customer support.'
+                        }, status=status.HTTP_423_LOCKED)
+                    elif timezone.now() - last.last_modified < datetime.timedelta(
+                            seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK):
+                        return Response({
+                            'status': False,
+                            'details': f'Wait {SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK} seconds to request new code'
+                        }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+                    else:
+                        if timezone.now() - last.last_modified < datetime.timedelta(
+                                seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT):
+                            last.count += 1
+                        last.used = False
+                        last.otp = code
+                        last.save()
+                        send_sms_code(phone_number, code)
+                        return Response({
+                            'status': True,
+                            'details': 'Successfully sent code'
+                        }, status=status.HTTP_200_OK)
                 else:
-                    if datetime.datetime.now() - last.last_modified.replace(tzinfo=None) < datetime.timedelta(seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT):
-                        last.count += 1
-                    last.used = False
-                    last.otp = code
-                    last.save()
-                    send_sms_code(phone, code)
-                    print(code)
+                    PhoneOTP.objects.create(
+                        phone_number=phone_number,
+                        otp=code
+                    )
+                    send_sms_code(phone_number, code)
                     return Response({
                         'status': True,
-                        'details': 'Successfully sended code'
+                        'details': 'Successfully sent code'
                     }, status=status.HTTP_200_OK)
             else:
-                PhoneOTP.objects.create(
-                    phone=phone,
-                    otp=code
-                )
-                send_sms_code(phone, code)
                 return Response({
                     'status': True,
-                    'details': 'Successfully sent code'
-                }, status=status.HTTP_200_OK)
+                    'details': 'Such number does not exists'
+                }, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({
                 'status': False,
@@ -63,31 +69,27 @@ class ValidatePhoneSendOTP(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
-# request {'phone_number': int, 'code': int}
-# response {'refresh': str, 'access': str}
+# request {'phone_number': str, 'code': str}
+# response {'access': str, 'refresh': str}
 class ValidateOTP(APIView):
     def post(self, request, *args, **kwargs):
         phone_number = request.data.get('phone_number')
         otp = request.data.get('code')
         if phone_number and otp:
-            phone_number = str(phone_number)
-            otp = str(otp)
-            phone_otp = PhoneOTP.objects.filter(phone=phone_number)
+            phone_otp = PhoneOTP.objects.filter(phone_number=phone_number)
             if phone_otp.exists():
                 phone_otp = phone_otp.first()
                 if not phone_otp.is_used:
                     if otp == phone_otp.otp:
-                        if datetime.datetime.now() - phone_otp.last_modified.replace(tzinfo=None) < datetime.timedelta(seconds=OTP_EXPIRATION_SECONDS):
+                        if timezone.now() - phone_otp.last_modified < datetime.timedelta(
+                                seconds=OTP_EXPIRATION_SECONDS):
                             phone_otp.used = True
                             phone_otp.save()
-                            user = User.objects.filter(phone=phone_number)
+                            user = User.objects.filter(phone_number=phone_number)
                             if user.exists():
                                 user = user.first()
                             else:
-                                # TODO: Получить имя пользователя и роль из битрикса
-
-                                user = User.objects.create_user(phone=phone_number, full_name='Abobov Aboba Abobovich')
-
+                                user = create_user(phone_number)
                             refresh = RefreshToken.for_user(user)
                             return Response({
                                 'access': str(refresh.access_token),
@@ -96,25 +98,70 @@ class ValidateOTP(APIView):
                         else:
                             return Response({
                                 'status': False,
-                                'details': 'Your otp has expired'
+                                'details': 'Your code has expired'
                             }, status=status.HTTP_400_BAD_REQUEST)
                     else:
                         return Response({
                             'status': False,
-                            'details': 'Wrong otp'
+                            'details': 'Wrong code'
                         }, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response({
                         'status': False,
-                        'details': 'You can not use same otp more then once, get new otp and try again'
+                        'details': 'You can not use same otp more then once, get new code and try again'
                     }, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({
                     'status': False,
-                    'details': 'You must validate phone and send otp first'
+                    'details': 'You must validate phone and send code first'
                 }, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({
                 'status': False,
-                'details': 'You must specify phone number and otp'
+                'details': 'You must specify phone number and code'
             }, status=status.HTTP_400_BAD_REQUEST)
+
+
+def create_user(phone_number: str):
+    user = get_user_from_bitrix(phone_number)
+    user_type = user.contact_type
+    if user_type == User.CONTACT.SPORTSMAN:
+        user.add_group(User.Group.STUDENT)
+        if user.father_phone_number:
+            father = User.objects.filter(phone_number=user.father_phone_number)
+            if not father.exists():
+                father_full_name = user.father_full_name.split()
+                last_name = father_full_name[0] if len(father_full_name) >= 1 else ""
+                first_name = father_full_name[1] if len(father_full_name) >= 2 else ""
+                middle_name = father_full_name[2] if len(father_full_name) >= 3 else ""
+                father = User.objects.create_user(
+                    phone_number=user.father_phone_number,
+                    last_name=last_name,
+                    first_name=first_name,
+                    middle_name=middle_name,
+                    birth_date=user.father_birth_date,
+                    contact_type=User.CONTACT.PARENT
+                )
+                father.add_group(User.Group.PARENT)
+                user.parents.add(father)
+        if user.mother_phone_number:
+            mother = User.objects.filter(phone_number=user.mother_phone_number)
+            if not mother.exists():
+                mother_full_name = user.mother_full_name.split()
+                last_name = mother_full_name[0] if len(mother_full_name) >= 1 else ""
+                first_name = mother_full_name[1] if len(mother_full_name) >= 2 else ""
+                middle_name = mother_full_name[2] if len(mother_full_name) >= 3 else ""
+                mother = User.objects.create_user(
+                    phone_number=user.mother_phone_number,
+                    last_name=last_name,
+                    first_name=first_name,
+                    middle_name=middle_name,
+                    birth_date=user.mother_birth_date,
+                    contact_type=User.CONTACT.PARENT
+                )
+                mother.add_group(User.Group.PARENT)
+                user.parents.add(mother)
+    elif user_type == User.CONTACT.TRAINER:
+        user.add_group(User.Group.TRAINER)
+        pass
+    return user

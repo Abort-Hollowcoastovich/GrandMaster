@@ -10,26 +10,26 @@ User = get_user_model()
 
 class UserAdmin(BaseUserAdmin):
     # То, что отображается в просмотре в виде списка
-    list_display = ('full_name', 'phone', 'admin',)
+    list_display = ('phone_number', 'admin',)
     # То, по чему можно фильтровать этот список
     list_filter = ('active', 'admin',)
     # Поля при просмотре конкретного объекта
     fieldsets = (
-        (None, {'fields': ('phone', 'password', 'full_name', 'parents')}),
+        (None, {'fields': ('phone_number', 'password', 'parents')}),
         ('Permissions', {'fields': ('admin', 'active', 'groups')}),
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('phone', 'password1', 'password2')}
+            'fields': ('phone_number', 'password1', 'password2')}
          ),
     )
 
     # Поля, по которым можно сортировать при просмотре в виде списка
-    search_fields = ('phone', 'full_name')
+    search_fields = ('phone_number', )
     # Поля, по которым идет порядок просмотра в виде списка
-    ordering = ('phone', 'full_name')
+    ordering = ('phone_number', )
     filter_horizontal = ()
 
     def get_inline_instances(self, request, obj=None):
