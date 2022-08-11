@@ -23,6 +23,6 @@ urlpatterns = [
                   path('auth/', include('authentication.urls')),
                   path('news/', include('news.urls')),
                   path('events/', include('event.urls')),
-                  path('profiles/', include('profiles.urls')),
+                  path('users/', include('profiles.urls')),
                   path('webhook/', include('webhook.urls'))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
