@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'gyms',
     'sport_groups',
     'webhook',
+    'club_content',
 ]
 
 MIDDLEWARE = [
