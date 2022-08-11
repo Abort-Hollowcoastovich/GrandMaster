@@ -1,5 +1,4 @@
-import json
-
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination
@@ -17,7 +16,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 
 class EventViewSet(ModelViewSet):
-    # permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
     serializer_class = EventSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -31,7 +30,13 @@ class EventViewSet(ModelViewSet):
 
     @action(detail=True, methods=['put'])
     def add_member(self, request, *args, **kwargs):
-        user = User.objects.get(self.request.data['pk'])
+        try:
+            user = User.objects.get(pk=request.data['pk'])
+        except:
+            return Response({
+                'status': False,
+                'details': 'No such user'
+            }, status=status.HTTP_400_BAD_REQUEST)
         instance = self.get_object()
         instance.members.add(user)
         instance.save()
