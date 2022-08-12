@@ -23,7 +23,7 @@ urlpatterns = [
                   path('auth/', include('authentication.urls')),
                   path('news/', include('news.urls')),
                   path('events/', include('event.urls')),
-                  path('profiles/', include('profiles.urls')),
+                  path('users/', include('profiles.urls')),
                   path('webhook/', include('webhook.urls')),
                   path('club_content/', include('club_content.urls')),
                   path('sport_groups/', include('sport_groups.urls'))
