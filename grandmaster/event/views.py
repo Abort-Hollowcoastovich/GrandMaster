@@ -16,7 +16,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 
 class EventViewSet(ModelViewSet):
-    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+    # permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
     serializer_class = EventSerializer
     pagination_class = StandardResultsSetPagination
 

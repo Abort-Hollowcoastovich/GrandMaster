@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from authentication.models import User
 from .models import SportGroup
 from .serializers import SportGroupSerializer
