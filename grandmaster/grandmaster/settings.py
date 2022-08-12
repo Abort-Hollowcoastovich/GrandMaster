@@ -184,12 +184,14 @@ GROUPS = {
     },
     "Student": {
         "news": ["view"],
+        "sport group": ["add", "delete", "change", "view"],
     },
     "Parent": {
         "news": ["view"],
     },
     "Trainer": {
         "news": ["view"],
+        "sport group": ["add", "delete", "change", "view"],
     },
 }
 
