@@ -26,5 +26,6 @@ urlpatterns = [
                   path('users/', include('profiles.urls')),
                   path('webhook/', include('webhook.urls')),
                   path('club_content/', include('club_content.urls')),
-                  path('sport_groups/', include('sport_groups.urls'))
+                  path('sport_groups/', include('sport_groups.urls')),
+                  path('gyms/', include('gyms.urls'))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
