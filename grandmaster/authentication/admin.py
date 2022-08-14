@@ -16,7 +16,7 @@ class UserAdmin(BaseUserAdmin):
     # Поля при просмотре конкретного объекта
     fieldsets = (
         (None, {'fields': ('phone_number', 'password', 'parents')}),
-        ('Permissions', {'fields': ('admin', 'active', 'groups')}),
+        ('Permissions', {'fields': ('admin', 'active', 'groups', 'user_permissions')}),
     )
 
     add_fieldsets = (
