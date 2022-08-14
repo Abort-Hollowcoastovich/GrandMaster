@@ -1,6 +1,7 @@
 from rest_framework import generics
-from rest_framework.permissions import DjangoModelPermissions, BasePermission
+from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
+from rest_framework import status
 from django.contrib.auth import get_user_model
 
 from .serializers import UserDetailsSerializer, DocumentsDetailsSerializer, UserListSerializer
@@ -14,6 +15,11 @@ class UserDetails(generics.RetrieveAPIView):
     permission_classes = [DjangoModelPermissions]  # TODO: уточнить права
 
 
+class SelfDetails(generics.RetrieveAPIView):
+    def get(self, request, *args, **kwargs):
+        return Response(UserDetailsSerializer(request.user, context={'request': request}).data)
+
+
 class DocumentsDetails(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = DocumentsDetailsSerializer
@@ -23,6 +29,12 @@ class DocumentsDetails(generics.RetrieveAPIView):
 class UserList(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         user = self.request.user
+        if user.is_anonymous:
+            return Response({
+                'status': False,
+                'details': 'Unauthorized'
+            },
+                status=status.HTTP_401_UNAUTHORIZED)
         users = [user]
         for child in user.children.all():
             users.append(child)

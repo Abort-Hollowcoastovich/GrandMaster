@@ -33,3 +33,13 @@ class NewsSerializer(serializers.ModelSerializer):
         for image_data in images_data.values():
             NewsImage.objects.create(news=news, image=image_data)
         return news
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        images = self.context.get('view').request.FILES
+        images.pop('cover', None)
+        for image in images.values():
+            instance.images.add(NewsImage.objects.create(news=instance, image=image))
+        instance.images.add()
+        return instance
+

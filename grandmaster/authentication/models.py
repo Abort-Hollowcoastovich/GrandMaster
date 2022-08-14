@@ -178,13 +178,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return " ".join([last_name, first_name, middle_name])
 
     def __str__(self) -> str:
-        return self.phone_number + '_' + self.full_name
-
-    def has_perm(self, perm, obj=None):
-        return self.admin
-
-    def has_module_perms(self, app_label):
-        return self.admin
+        return self.full_name
 
     @property
     def is_staff(self):

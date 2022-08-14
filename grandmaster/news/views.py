@@ -32,5 +32,4 @@ class NewsViewSet(ModelViewSet):
         if user.is_authenticated:
             if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
                 return News.objects.all()
-        else:
-            return News.objects.filter(hidden=False)
+        return News.objects.filter(hidden=False)
