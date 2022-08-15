@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'sport_groups',
     'webhook',
     'club_content',
-    'qrcodes'
+    'qrcodes',
+    'invoice',
 ]
 
 DATABASES = {
