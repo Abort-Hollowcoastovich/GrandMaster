@@ -1,7 +1,7 @@
 from django.urls import path
 
-# from .views import ProfileDetails, ProfileList, DocumentsDetails
+from .views import webhook
 
 urlpatterns = [
-    # path('', ProfileList.as_view()),
+    path('webhook/', webhook),
 ]

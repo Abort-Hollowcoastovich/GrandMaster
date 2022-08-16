@@ -79,7 +79,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=100, null=True)
     active = models.BooleanField(default=True)
     admin = models.BooleanField(default=False)
-    superuser = models.BooleanField(default=False)
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = []
     objects = UserManager()
@@ -190,7 +189,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_superuser(self):
-        return self.superuser
+        return self.admin
 
     @property
     def is_active(self):

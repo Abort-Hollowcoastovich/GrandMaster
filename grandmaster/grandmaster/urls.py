@@ -24,7 +24,7 @@ urlpatterns = [
                   path('news/', include('news.urls')),
                   path('events/', include('event.urls')),
                   path('users/', include('profiles.urls')),
-                  path('webhook/', include('webhook.urls')),
+                  path('bitrix/', include('webhook.urls')),
                   path('club_content/', include('club_content.urls')),
                   path('sport_groups/', include('sport_groups.urls')),
                   path('gyms/', include('gyms.urls')),
