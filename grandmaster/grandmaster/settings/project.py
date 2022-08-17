@@ -4,10 +4,12 @@ GROUPS = {
     "Administrator": {
         "news": ["add", "delete", "change"],
         "video": ["add", "delete", "change"],
+        "instruction": ["add", "delete", "change"],
     },
     "Moderator": {
         "news": ["add", "delete", "change"],
         "video": ["add", "delete", "change"],
+        "instruction": ["add", "delete", "change"],
     },
     "Student": {
         "news": ["view"],
