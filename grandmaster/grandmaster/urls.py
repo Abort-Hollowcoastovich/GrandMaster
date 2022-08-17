@@ -29,5 +29,7 @@ urlpatterns = [
                   path('sport_groups/', include('sport_groups.urls')),
                   path('gyms/', include('gyms.urls')),
                   path('qrcodes/', include('qrcodes.urls')),
-                  path('invoices/', include('invoice.urls'))
+                  path('invoices/', include('invoice.urls')),
+                  path('videos/', include('videos.urls')),
+                  path('instructions/', include('instructions.urls'))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

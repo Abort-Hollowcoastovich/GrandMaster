@@ -2,10 +2,14 @@
 
 GROUPS = {
     "Administrator": {
-        "news": ["add", "delete", "change", "view"],
+        "news": ["add", "delete", "change"],
+        "video": ["add", "delete", "change"],
+        "instruction": ["add", "delete", "change"],
     },
     "Moderator": {
-        "news": ["add", "delete", "change", "view"],
+        "news": ["add", "delete", "change"],
+        "video": ["add", "delete", "change"],
+        "instruction": ["add", "delete", "change"],
     },
     "Student": {
         "news": ["view"],
@@ -15,6 +19,6 @@ GROUPS = {
     },
     "Trainer": {
         "news": ["view"],
-        "sport group": ["add", "delete", "change", "view"],
+        "sport group": ["add", "delete", "change"],
     },
 }

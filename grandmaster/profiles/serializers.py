@@ -53,7 +53,6 @@ class UserDetailsSerializer(serializers.HyperlinkedModelSerializer):
             'last_login',
             'active',
             'admin',
-            'superuser',
             'user_permissions',
             'groups',
             'parents',

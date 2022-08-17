@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'club_content',
     'qrcodes',
     'invoice',
+    'videos',
 ]
 
 DATABASES = {

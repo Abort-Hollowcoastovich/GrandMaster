@@ -7,5 +7,5 @@ from rest_framework.response import Response
 @api_view(['GET', 'POST'])
 def webhook(request):
     print(request.method)
-    print(json.loads(request.body))
+    print(request.body.decode('utf8'))
     return Response({'detail': 'hello'})
