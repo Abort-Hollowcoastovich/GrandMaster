@@ -8,11 +8,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import PhoneOTP, User
 from .utils import send_sms_code, generate_code, is_exists_on_bitrix, get_user_from_bitrix
-
-MAX_SEND_TIMES = 10
-SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK = 1  # toDo: change
-SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT = 600
-OTP_EXPIRATION_SECONDS = 300
+from grandmaster.settings.project import (
+    MAX_SEND_TIMES,
+    SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK,
+    SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT,
+    OTP_EXPIRATION_SECONDS
+)
 
 
 class ValidatePhoneSendOTP(APIView):

@@ -5,4 +5,13 @@ from .models import Gym
 class GymSerializer(serializers.ModelSerializer):
     class Meta:
         model = Gym
-        fields = '__all__'
+        fields = [
+            'id',
+            'title',
+            'description',
+            'address',
+            'cover',
+            'order',
+            'trainers',
+        ]
+        read_only_fields = ['id']
