@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Q, F
 from sport_groups.models import SportGroup
 from gyms.models import Gym
@@ -16,7 +15,7 @@ class Schedule(models.Model):
         SATURDAY = 'SA'
         SUNDAY = 'SU'
 
-    day_of_the_week = models.CharField(choices=WeekDay.choices)
+    day_of_the_week = models.CharField(choices=WeekDay.choices, max_length=10)
     start_time = models.TimeField()
     finish_time = models.TimeField()
     gym = models.ForeignKey(to=Gym, related_name='my_groups', on_delete=models.DO_NOTHING, null=True)

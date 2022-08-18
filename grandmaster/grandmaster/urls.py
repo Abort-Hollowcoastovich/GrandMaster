@@ -32,5 +32,7 @@ urlpatterns = [
                   path('invoices/', include('invoice.urls')),
                   path('videos/', include('videos.urls')),
                   path('instructions/', include('instructions.urls')),
-                  path('schedule/', include('schedule.urls'))
+                  path('schedule/', include('schedule.urls')),
+                  path('visit_log/', include('visit_log.urls')),
+                  path('chat/', include('chat.urls'))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
