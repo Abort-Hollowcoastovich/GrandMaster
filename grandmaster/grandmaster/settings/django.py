@@ -29,6 +29,9 @@ INSTALLED_APPS = [
     'qrcodes',
     'invoice',
     'videos',
+    'chat',
+    'visit_log',
+    'schedule'
 ]
 
 DATABASES = {
