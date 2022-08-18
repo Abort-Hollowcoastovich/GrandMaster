@@ -24,11 +24,11 @@ def validate_min(value: timedelta):
 
 
 class Bill(models.Model):
-    class Services:
+    class Services(models.TextChoices):
         YOOKASSA = 'yookassa'
 
-    yookassa_id = models.CharField(max_length=256)  # 23d93cac-000f-5000-8000-126628f15141
-    service = models.CharField(max_length=256, default=Services.YOOKASSA)
+    yookassa_id = models.CharField(max_length=256, null=True)  # 23d93cac-000f-5000-8000-126628f15141
+    service = models.CharField(max_length=256, default=Services.YOOKASSA, choices=Services.choices)
     pay_account = models.ForeignKey(to=PayAccount, on_delete=models.DO_NOTHING)
     payer = models.ForeignKey(to=User, on_delete=models.DO_NOTHING)
     purpose = models.CharField(max_length=256)
