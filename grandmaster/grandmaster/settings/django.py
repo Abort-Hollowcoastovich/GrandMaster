@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'invoice',
     'videos',
     'visit_log',
-    'schedule'
+    'schedule',
 ]
 
 DATABASES = {
