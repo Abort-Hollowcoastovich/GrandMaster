@@ -5,7 +5,6 @@ from gyms.models import Gym
 
 
 class Schedule(models.Model):
-
     class WeekDay(models.TextChoices):
         MONDAY = 'MN'
         TUESDAY = 'TU'
@@ -15,11 +14,11 @@ class Schedule(models.Model):
         SATURDAY = 'SA'
         SUNDAY = 'SU'
 
-    day_of_the_week = models.CharField(choices=WeekDay.choices, max_length=10)
+    weekday = models.CharField(choices=WeekDay.choices, max_length=10)
     start_time = models.TimeField()
     finish_time = models.TimeField()
-    gym = models.ForeignKey(to=Gym, related_name='my_groups', on_delete=models.DO_NOTHING, null=True)
-    group = models.ManyToManyField(to=SportGroup, related_name='sport_groups', blank=True)
+    gym = models.ForeignKey(to=Gym, related_name='schedules', on_delete=models.DO_NOTHING, null=True)
+    group = models.ForeignKey(to=SportGroup, related_name='schedules', on_delete=models.DO_NOTHING, null=True)
 
     class Meta:
         db_table = 'schedule'

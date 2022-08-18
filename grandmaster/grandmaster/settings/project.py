@@ -5,20 +5,20 @@ GROUPS = {
         "news": ["add", "delete", "change"],
         "video": ["add", "delete", "change"],
         "instruction": ["add", "delete", "change"],
+        "schedule": ["add", "delete", "change"],
     },
     "Moderator": {
         "news": ["add", "delete", "change"],
         "video": ["add", "delete", "change"],
         "instruction": ["add", "delete", "change"],
-    },
-    "Student": {
-        "news": ["view"],
-    },
-    "Parent": {
-        "news": ["view"],
+        "schedule": ["add", "delete", "change"],
     },
     "Trainer": {
-        "news": ["view"],
         "sport group": ["add", "delete", "change"],
+        "schedule": ["add", "delete", "change"],
+    },
+    "Student": {
+    },
+    "Parent": {
     },
 }
