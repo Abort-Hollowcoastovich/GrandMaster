@@ -7,22 +7,22 @@ from django.contrib.auth import get_user_model
 
 from utils.photo import get_photo
 from authentication.models import Document
+from grandmaster.settings.common import DEBUG
 
 User = get_user_model()
 
-USE_MOCK = True
 webhook = "https://gm61.bitrix24.ru/rest/2261/6ot3rs39vklb84zs/"
 domain = 'https://gm61.bitrix24.ru'
 
 
 def generate_code(length=5):
-    if USE_MOCK:
+    if DEBUG:
         return '12345'
     return ''.join(str(random.choice(range(0, 10))) for _ in range(length))
 
 
 def send_sms_code(phone_number: str, code: str):
-    if USE_MOCK:
+    if DEBUG:
         print(phone_number, code)
     else:
         requests.get('https://sms.ru/sms/send?api_id=FD33BB41-4A34-F593-9D1F-EFA5663C82BB&to=' + phone_number +
@@ -35,7 +35,7 @@ def is_exists_on_bitrix(phone_number: str):
     params = {
         'select': ['*', 'UF_*', 'PHONE', 'EMAIL', 'IM'],
         'filter': {'UF_CRM_1603290188': phone_number},
-    }  # fix filtering
+    }  # TODO: fix filtering
     result = b.call_webhook(method, '6ot3rs39vklb84zs', params)['result']
     print('len:', len(result))
     return bool(result)
