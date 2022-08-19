@@ -53,7 +53,7 @@ class Bill(models.Model):
 
 
 class UserBill(models.Model):
-    yookassa_id = models.CharField(max_length=256, null=True)  # 23d93cac-000f-5000-8000-126628f15141
+    yookassa_id = models.CharField(max_length=256, null=True, blank=True)  # 23d93cac-000f-5000-8000-126628f15141
     user = models.ForeignKey(to=User, related_name='bills', on_delete=models.DO_NOTHING)
     bill = models.ForeignKey(to=Bill, related_name='bill_users', on_delete=models.DO_NOTHING)
     is_active = models.BooleanField(default=True)
