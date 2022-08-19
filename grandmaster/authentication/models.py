@@ -134,12 +134,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     inn = models.ImageField(upload_to=DocumentsPathAndHash('inn'), null=True)  # UF_CRM_CONTACT_1656319970203
     diploma = models.ImageField(upload_to=DocumentsPathAndHash('diploma'), null=True)  # UF_CRM_CONTACT_1656319776732
     snils = models.ImageField(upload_to=DocumentsPathAndHash('snils'), null=True)  # UF_CRM_CONTACT_1656320071632
-    # TODO: Add others field:  UF_CRM_CONTACT_1656822613397
 
     parents = models.ManyToManyField('self', related_name='children', symmetrical=False, blank=True)
     trainer = models.ForeignKey('self', related_name='students', on_delete=models.DO_NOTHING, null=True)
 
-    def __contains__(self, group_name):  # TODO: Remove?
+    def __contains__(self, group_name):
         # Example: User.Group.PARENT in user_object
         group, created = Group.objects.get_or_create(name=group_name)
         return group in self.groups.all()
@@ -158,16 +157,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 4. Не должно быть неоплаченных счетов с "Датой оплаты" текущая дата + 3 дня
     @property
     def is_admitted(self) -> bool:
-        return bool(self.city) and \
-               bool(self.address) and \
-               bool(self.med_certificate_date) and \
-               bool(self.insurance_policy_date) and \
-               (self.med_certificate_date - timezone.now() > timedelta(days=3)) and \
-               (self.insurance_policy_date - timezone.now() > timedelta(days=3)) and \
-               self.passport_or_birth_certificate and \
-               self.oms_policy and \
-               self.insurance_policy and \
-               self.med_certificate and False  # 4 TODO: end this
+        return (bool(self.city) and
+                bool(self.address) and
+                bool(self.med_certificate_date) and
+                bool(self.insurance_policy_date) and
+                (self.med_certificate_date - timezone.now() > timedelta(days=3)) and
+                (self.insurance_policy_date - timezone.now() > timedelta(days=3)) and
+                self.passport_or_birth_certificate and
+                self.oms_policy and
+                self.insurance_policy and
+                self.med_certificate and
+                not any([bill.is_blocked for bill in self.bills.all()]))
 
     @property
     def full_name(self) -> str:
