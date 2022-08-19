@@ -36,9 +36,9 @@ class Bill(models.Model):
     amount = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     activated_at = models.DateTimeField()
-    _must_be_paid_at = models.DateTimeField()
+    _must_be_paid_at = models.DateTimeField(null=True, blank=True)
     is_periodic = models.BooleanField()
-    period = models.DurationField(null=True, validators=[validate_min])
+    period = models.DurationField(null=True, blank=True, validators=[validate_min])
 
     @property
     def must_be_paid_at(self):
