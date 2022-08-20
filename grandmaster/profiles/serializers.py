@@ -83,4 +83,4 @@ class UserListSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url']
 
     def to_representation(self, instance):
-        return self.context.get('request').build_absolute_uri(reverse('user-detail', args=[instance.pk]))
+        return reverse('user-detail', args=[instance.pk])

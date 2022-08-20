@@ -17,6 +17,8 @@ class UserDetails(generics.RetrieveAPIView):
 
 
 class SelfDetails(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         return Response(UserDetailsSerializer(request.user, context={'request': request}).data)
 
