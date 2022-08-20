@@ -65,7 +65,7 @@ def get_user_from_bitrix(phone_number: str):
         result = result[0]
 
     load = lambda x: None if x is None or not x else get_photo(domain + x['downloadUrl'])
-    make_date = lambda x: datetime.fromisoformat(x) if x is not None and x else None
+    make_date = lambda x: datetime.fromisoformat(x).replace(tzinfo=None) if x is not None and x else None
 
     b24_id = result['ID']
     photo = load(result['PHOTO'])
