@@ -1,16 +1,20 @@
+import json
+
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework import serializers
+
 from .models import News, NewsImage
 
 
 class NewsImagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsImage
-        fields = ['image']
+        fields = ['id', 'image']
 
 
 class NewsSerializer(serializers.ModelSerializer):
     images = NewsImagesSerializer(many=True, read_only=True)
-    
+
     class Meta:
         model = News
         fields = [
@@ -35,11 +39,45 @@ class NewsSerializer(serializers.ModelSerializer):
         return news
 
     def update(self, instance, validated_data):
-        instance = super().update(instance, validated_data)
-        images = self.context.get('view').request.FILES
-        images.pop('cover', None)
-        for image in images.values():
-            instance.images.add(NewsImage.objects.create(news=instance, image=image))
-        instance.images.add()
-        return instance
+        request = self.context.get('view').request
+        data = request.data
+        data._mutable = True
+        print(data)
+        title = data.pop('title', None)
+        description = data.pop('description', None)
+        order = data.pop('order', None)
+        hidden = data.pop('hidden', None)
+        cover = data.pop('cover', None)
+        if title is not None:
+            instance.title = title[0]
+        if description is not None:
+            instance.description = description[0]
+        if order is not None:
+            instance.order = order[0]
+        if hidden is not None:
+            instance.hidden = hidden[0].capitalize()
+        if cover is not None:
+            instance.cover = cover[0]
 
+        # items {'id': new_image_to_change, 'random_str': add_image, 'id': 'leave_image'}
+        save_images = []
+        for key, value in data.items():
+            if isinstance(value, InMemoryUploadedFile):
+                if key.isdigit():
+                    save_images.append(key)
+            else:
+                save_images.append(key)
+        NewsImage.objects.exclude(id__in=save_images).delete()
+        for key, value in data.items():
+            if isinstance(value, InMemoryUploadedFile):
+                if key.isdigit():
+                    try:
+                        image = NewsImage.objects.get(id=key)
+                        image.image = value
+                        image.save()
+                    except NewsImage.DoesNotExist as e:
+                        pass  # TODO: raise 404
+                else:
+                    instance.images.add(NewsImage.objects.create(news=instance, image=value))
+        instance.save()
+        return instance

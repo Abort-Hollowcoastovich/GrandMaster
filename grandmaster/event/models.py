@@ -17,7 +17,7 @@ class Event(models.Model):
 
     class Meta:
         db_table = 'events'
-        ordering = ['start_date']
+        ordering = ['number', 'start_date']
 
     @property
     def is_open(self):

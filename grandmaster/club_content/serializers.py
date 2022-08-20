@@ -6,5 +6,5 @@ class ContentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Content
-        fields = ['pk', 'name', 'description', 'cover', 'number']
-        read_only_fields = ['pk', 'number']
+        fields = ['id', 'name', 'description', 'cover', 'number']
+        read_only_fields = ['id']
