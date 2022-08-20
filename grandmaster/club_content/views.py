@@ -12,6 +12,7 @@ class ContentViewSet(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
-            return Content.objects.all()
+        if user.is_authenticated:
+            if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
+                return Content.objects.all()
         return Content.objects.filter(hidden=False)

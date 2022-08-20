@@ -17,3 +17,11 @@ class SportGroupSerializer(serializers.ModelSerializer):
     #     request = self.context.get("request")
     #     return [request.build_absolute_uri(reverse('user-detail', args=[member.pk])) for member in obj.members.all()]
 
+
+class SportsmenListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'full_name'
+        ]
