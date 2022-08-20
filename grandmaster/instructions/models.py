@@ -7,6 +7,7 @@ class Instruction(models.Model):
     link = models.URLField()
     order = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    hidden = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'instructions'
