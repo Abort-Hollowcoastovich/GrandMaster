@@ -29,17 +29,28 @@ class DocumentsDetailsSerializer(serializers.ModelSerializer):
         return [request.build_absolute_uri(el.image.url) for el in obj.other_documents.all()]
 
 
-class UserDetailsSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'full_name'
+        ]
+
+
+
+class UserDetailsSerializer(serializers.ModelSerializer):
     documents = serializers.HyperlinkedIdentityField(
         view_name='documents-detail'
     )
     admitted = serializers.BooleanField(source='is_admitted')
+    parents = UserSerializer(many=True)
+    children = UserSerializer(many=True)
 
     class Meta:
         model = User
         fields = [
             'id',
-            'url',
             'documents',
             'admitted',
             'photo',
