@@ -28,10 +28,10 @@ class EventViewSet(ModelViewSet):
         else:
             return Event.objects.filter(hidden=False)
 
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['patch'])
     def add_member(self, request, *args, **kwargs):
         try:
-            user = User.objects.get(pk=request.data['pk'])
+            user = User.objects.get(pk=request.data['id'])
         except:
             return Response({
                 'status': False,
@@ -39,6 +39,21 @@ class EventViewSet(ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         instance = self.get_object()
         instance.members.add(user)
+        instance.save()
+        serializer = EventSerializer(instance=instance)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['patch'])
+    def remove_member(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(pk=request.data['id'])
+        except:
+            return Response({
+                'status': False,
+                'details': 'No such user'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        instance = self.get_object()
+        instance.members.remove(user)
         instance.save()
         serializer = EventSerializer(instance=instance)
         return Response(serializer.data)

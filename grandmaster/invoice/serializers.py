@@ -33,7 +33,6 @@ class UserBillSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'bill',
-            'is_active',
             'is_paid',
             'is_blocked'
         ]

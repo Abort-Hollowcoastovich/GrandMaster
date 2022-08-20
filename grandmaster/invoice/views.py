@@ -20,14 +20,8 @@ User = get_user_model()
 def webhook_handler(request):
     try:
         notification_object = WebhookNotification(json.loads(request.body))
-        print(notification_object)
-        print(notification_object.object)
-        print(notification_object.event)
-        print(notification_object.type)
-        print(notification_object.object.id)
         bill = UserBill.objects.get(yookassa_id=notification_object.object.id)
         if notification_object.object.status == 'succeeded':
-            print(notification_object.object.status)
             bill.paid_at = timezone.now()
             bill.paid = True
             bill.save()
@@ -40,6 +34,8 @@ def webhook_handler(request):
 
 
 class PayAccountsList(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         if User.Group.ADMINISTRATOR in request.user:
             return Response(PayAccountSerializer(
@@ -58,7 +54,7 @@ class CurrentBillsList(APIView):
         user = request.user
         return Response(
             UserBillSerializer(
-                user.bills.all(),
+                user.bills.filter(is_active=True).all(),
                 context={'request': request},
                 many=True
             ).data,
@@ -70,14 +66,19 @@ class CurrentBillsList(APIView):
 # {"confirmation_url": "https://yoomoney.ru/checkout/payments/v2/contract?orderId=2a919bb7-000f-5000-9000-1cc21f5c9859"}
 @api_view(['GET'])
 def pay_bill(request, bill_id):
-    # TODO: add try
-    bill = UserBill.objects.get(id=bill_id)
-    payment = create_payment(amount=bill.bill.amount, description=str(bill))
-    bill.yookassa_id = payment.id
-    bill.save()
-    return Response({
-        'status': True,
-        'detail': 'success',
-        'confirmation_url': payment.confirmation.confirmation_url},
-        status=status.HTTP_200_OK
-    )
+    try:
+        bill = UserBill.objects.get(id=bill_id)
+        payment = create_payment(amount=bill.bill.amount, description=str(bill))
+        bill.yookassa_id = payment.id
+        bill.save()
+        return Response({
+            'status': True,
+            'detail': 'success',
+            'confirmation_url': payment.confirmation.confirmation_url},
+            status=status.HTTP_200_OK
+        )
+    except UserBill.DoesNotExist:
+        return Response({
+            'status': False,
+            'details': 'No such bill'
+        }, status=status.HTTP_404_NOT_FOUND)
