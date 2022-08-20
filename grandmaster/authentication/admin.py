@@ -19,6 +19,11 @@ class UserAdmin(BaseUserAdmin):
         ('Permissions', {'fields': ('admin', 'active', 'groups', 'user_permissions')}),
     )
 
+    readonly_fields = ["children"]
+
+    def children(self, obj):
+        return obj.children.all()
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -30,7 +35,6 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('phone_number', )
     # Поля, по которым идет порядок просмотра в виде списка
     ordering = ('phone_number', )
-    filter_horizontal = ()
 
     def get_inline_instances(self, request, obj=None):
         if not obj:
