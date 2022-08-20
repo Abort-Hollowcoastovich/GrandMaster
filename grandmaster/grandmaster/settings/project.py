@@ -15,6 +15,7 @@ GROUPS = {
         "schedule": ["add", "delete", "change"],
         "gym": ["add", "delete", "change"],
         "event": ["add", "delete", "change"],
+        "content": ["add", "delete", "change"],
     },
     "Moderator": {
         "news": ["add", "delete", "change"],
@@ -24,6 +25,7 @@ GROUPS = {
         "schedule": ["add", "delete", "change"],
         "gym": ["add", "delete", "change"],
         "event": ["add", "delete", "change"],
+        "content": ["add", "delete", "change"],
     },
     "Trainer": {
         "sport group": ["add", "delete", "change"],
