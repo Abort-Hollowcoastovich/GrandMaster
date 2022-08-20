@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
+from rest_framework.permissions import DjangoModelPermissions
 from .models import Event
 from .serializers import EventSerializer
 from authentication.models import User
@@ -16,7 +16,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 
 class EventViewSet(ModelViewSet):
-    # permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+    permission_classes = [DjangoModelPermissions]
     serializer_class = EventSerializer
     pagination_class = StandardResultsSetPagination
 
