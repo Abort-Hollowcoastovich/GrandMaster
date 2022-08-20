@@ -45,6 +45,3 @@ OTP_EXPIRATION_SECONDS = env.int("OTP_EXPIRATION_SECONDS")
 
 # BITRIX:
 # WEBHOOK_URL
-
-Configuration.account_id = env.str("YOOKASSA_ACCOUNT_ID")
-Configuration.secret_key = env.str("YOOKASSA_SECRET_KEY")
