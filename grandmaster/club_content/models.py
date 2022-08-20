@@ -7,6 +7,7 @@ class Content(models.Model):
     description = models.TextField(max_length=1000)
     cover = models.ImageField(upload_to=PathAndHash('content/covers'), null=True)
     number = models.IntegerField(default=0)
+    hidden = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'club_content'
