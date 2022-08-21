@@ -18,13 +18,12 @@ class VisitLogViewSet(ModelViewSet):
     # TODO: (7) Убрать проверку на авторизацию, переделать
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
-            if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
-                return VisitLog.objects.all()
-            elif User.Group.TRAINER in user:
-                # TODO: (7) ??? no such field, возвращать только те посещения, которые относятся к тренеру, т.е.
-                # VisitLog -> Schedule -> SportGroup -> User (Trainer)
-                return user.my_visit_log
+        if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
+            return VisitLog.objects.all()
+        elif User.Group.TRAINER in user:
+            # TODO: (7) ??? no such field, возвращать только те посещения, которые относятся к тренеру, т.е.
+            # VisitLog -> Schedule -> SportGroup -> User (Trainer)
+            return user.my_visit_log
         return VisitLog.objects.none()
 
     # TODo: (5) ????????????

@@ -6,5 +6,5 @@ class VisitLogSerializer(serializers.ModelSerializer):
     # TODO: (4) Переделать в соответствии с новой моделью
     class Meta:
         model = VisitLog
-        fields = ['id', 'day']
+        fields = ['id', 'day', 'attendance', 'date']
         read_only_fields = ['pk']

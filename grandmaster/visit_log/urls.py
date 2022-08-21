@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
-router.register(r'', VisitLogViewSet, basename='sport_groups')
+router.register(r'', VisitLogViewSet, basename='visit_log')
 
 
 urlpatterns = [

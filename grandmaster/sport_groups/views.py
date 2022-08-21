@@ -13,18 +13,17 @@ from profiles.serializers import UserListSerializer
 
 
 class SportGroupViewSet(ModelViewSet):
-    permission_classes = [DjangoModelPermissions]
+    # permission_classes = [DjangoModelPermissions]
     serializer_class = SportGroupSerializer
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
-            if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
-                return SportGroup.objects.all()
-            elif User.Group.TRAINER in user:
-                return user.my_groups
-            elif user.Group.STUDENT in user:
-                return user.sport_groups
+        if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
+            return SportGroup.objects.all()
+        elif User.Group.TRAINER in user:
+            return user.my_groups
+        elif user.Group.STUDENT in user:
+            return user.sport_groups
         return SportGroup.objects.none()
 
     @action(detail=True, methods=['patch'])
