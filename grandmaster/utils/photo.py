@@ -1,8 +1,10 @@
 from __future__ import annotations
-
+import cgi
 import requests
 import json
 import io
+
+from django.core.files import File
 from django.core.files.images import ImageFile
 
 
@@ -23,14 +25,14 @@ def update_tokens():
         json.dump(response, file, indent=4)
 
 
-def get_photo(url: str) -> ImageFile | None:
+def get_photo(url: str, *args) -> File | None:
     with open('tokens.json', mode='r', encoding='utf8') as file:
         tokens = json.load(file)
         access_token = tokens['access_token']
     response = requests.get(url, params={'auth': access_token})
-    if 'image' not in response.headers['Content-Type']:
+    if 'image' not in response.headers['Content-Type'] and 'application/pdf' not in response.headers['Content-Type']:
         update_tokens()
         get_photo(url)
-        print('wrong token')
         return
-    return ImageFile(io.BytesIO(response.content), name='foo.png')
+    value, params = cgi.parse_header(response.headers['Content-Disposition'])
+    return File(io.BytesIO(response.content), name=params['filename'])
