@@ -20,35 +20,35 @@ class ValidatePhoneSendOTP(APIView):
     def post(self, request, *args, **kwargs):
         phone_number = request.data.get('phone_number')
         if phone_number:
-            if is_exists_on_bitrix(phone_number):
-                phone_otp = PhoneOTP.objects.filter(phone_number=phone_number)
-                code = generate_code()
-                if phone_otp.exists():
-                    last = phone_otp.first()
-                    if last.count > MAX_SEND_TIMES:
-                        return Response({
-                            'status': False,
-                            'details': 'Code send request limit exceeded, contact customer support.'
-                        }, status=status.HTTP_423_LOCKED)
-                    elif timezone.now() - last.last_modified < datetime.timedelta(
-                            seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK):
-                        return Response({
-                            'status': False,
-                            'details': f'Wait {SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK} seconds to request new code'
-                        }, status=status.HTTP_429_TOO_MANY_REQUESTS)
-                    else:
-                        if timezone.now() - last.last_modified < datetime.timedelta(
-                                seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT):
-                            last.count += 1
-                        last.used = False
-                        last.otp = code
-                        last.save()
-                        send_sms_code(phone_number, code)
-                        return Response({
-                            'status': True,
-                            'details': 'Successfully sent code'
-                        }, status=status.HTTP_200_OK)
+            phone_otp = PhoneOTP.objects.filter(phone_number=phone_number)
+            code = generate_code()
+            if phone_otp.exists():
+                last = phone_otp.first()
+                if last.count > MAX_SEND_TIMES:
+                    return Response({
+                        'status': False,
+                        'details': 'Code send request limit exceeded, contact customer support.'
+                    }, status=status.HTTP_423_LOCKED)
+                elif timezone.now() - last.last_modified < datetime.timedelta(
+                        seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK):
+                    return Response({
+                        'status': False,
+                        'details': f'Wait {SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK} seconds to request new code'
+                    }, status=status.HTTP_429_TOO_MANY_REQUESTS)
                 else:
+                    if timezone.now() - last.last_modified < datetime.timedelta(
+                            seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT):
+                        last.count += 1
+                    last.used = False
+                    last.otp = code
+                    last.save()
+                    send_sms_code(phone_number, code)
+                    return Response({
+                        'status': True,
+                        'details': 'Successfully sent code'
+                    }, status=status.HTTP_200_OK)
+            else:
+                if is_exists_on_bitrix(phone_number):
                     PhoneOTP.objects.create(
                         phone_number=phone_number,
                         otp=code
@@ -58,11 +58,11 @@ class ValidatePhoneSendOTP(APIView):
                         'status': True,
                         'details': 'Successfully sent code'
                     }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    'status': True,
-                    'details': 'Such number does not exists'
-                }, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({
+                        'status': True,
+                        'details': 'Such number does not exists'
+                    }, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({
                 'status': False,
@@ -145,6 +145,7 @@ def create_user(phone_number: str):
                 )
                 father.add_group(User.Group.PARENT)
                 user.parents.add(father)
+            father_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.father_phone_number)
         if user.mother_phone_number:
             mother = User.objects.filter(phone_number=user.mother_phone_number)
             if not mother.exists():
@@ -162,6 +163,7 @@ def create_user(phone_number: str):
                 )
                 mother.add_group(User.Group.PARENT)
                 user.parents.add(mother)
+            mother_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.mother_phone_number)
     elif user_type == User.CONTACT.TRAINER:
         user.add_group(User.Group.TRAINER)
         pass
