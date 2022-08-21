@@ -6,6 +6,7 @@ class Video(models.Model):
     link = models.URLField(max_length=256)
     created_at = models.DateTimeField(auto_now_add=True)
     order = models.PositiveIntegerField()
+    hidden = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'videos'
