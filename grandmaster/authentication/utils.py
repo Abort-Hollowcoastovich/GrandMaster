@@ -154,5 +154,5 @@ def get_user_from_bitrix(phone_number: str):
         diploma=diploma,
         snils=snils,
     )
-    [Document.objects.create(user=user, image=load(el, 'other')) for el in result['UF_CRM_CONTACT_1656822613397']]
+    [Document.objects.create(user=user, image=load(el)) for el in result['UF_CRM_CONTACT_1656822613397']]
     return user
