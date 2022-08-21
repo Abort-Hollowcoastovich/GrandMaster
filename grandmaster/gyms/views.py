@@ -1,14 +1,14 @@
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
 from rest_framework.generics import ListAPIView
 
-from .serializers import GymSerializer, TrainerSerializer
+from .serializers import GymSerializer, TrainerSerializer, GymResponseSerializer
 from .models import Gym
 from authentication.models import User
 
 
 class GymViewSet(ModelViewSet):
-    queryset = Gym.objects.all()
     serializer_class = GymSerializer
     permission_classes = [DjangoModelPermissions]
 
