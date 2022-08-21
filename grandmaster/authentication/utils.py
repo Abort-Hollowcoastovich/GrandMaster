@@ -101,7 +101,6 @@ def get_user_from_bitrix(phone_number: str):
     mother_birth_date = make_date(result['UF_CRM_1602241804'])
     mother_phone_number = result['UF_CRM_1602241833']
     mother_email = result['UF_CRM_1602241870']
-
     oms_policy = load(result['UF_CRM_1602238239'])
     school_ref = load(result['UF_CRM_1602238293'])
     insurance_policy = load(result['UF_CRM_1602238335'])
@@ -110,9 +109,10 @@ def get_user_from_bitrix(phone_number: str):
     foreign_passport = load(result['UF_CRM_1602238474'])
     inn = load(result['UF_CRM_CONTACT_1656319970203'])
     diploma = load(result['UF_CRM_CONTACT_1656319776732'])
-    snils = load(result['UF_CRM_CONTACT_1656320071632'])
-
-
+    if result['UF_CRM_CONTACT_1656320071632'] is list:
+        snils = load(result['UF_CRM_CONTACT_1656320071632'][0])
+    else:
+        snils = load(result['UF_CRM_CONTACT_1656320071632'][0])
     user = User.objects.create_user(
         b24_id=b24_id,
         photo=photo,
@@ -154,5 +154,5 @@ def get_user_from_bitrix(phone_number: str):
         diploma=diploma,
         snils=snils,
     )
-    [Document.objects.create(user=user, image=load(el)) for el in result['UF_CRM_CONTACT_1656822613397']]
+    [Document.objects.create(user=user, image=load(el, 'other')) for el in result['UF_CRM_CONTACT_1656822613397']]
     return user

@@ -80,6 +80,7 @@ class ValidateOTP(APIView):
             phone_otp = PhoneOTP.objects.filter(phone_number=phone_number)
             if phone_otp.exists():
                 phone_otp = phone_otp.first()
+                print(phone_otp.is_used)
                 if not phone_otp.is_used:
                     if otp == phone_otp.otp:
                         if timezone.now() - phone_otp.last_modified < datetime.timedelta(

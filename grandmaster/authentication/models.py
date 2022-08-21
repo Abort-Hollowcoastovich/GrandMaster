@@ -120,21 +120,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     mother_phone_number = models.CharField(max_length=100, null=True)  # UF_CRM_1602241833
     mother_email = models.EmailField(null=True)  # UF_CRM_1602241870
 
-    passport_or_birth_certificate = models.ImageField(upload_to=DocumentsPathAndHash('passport_or_birth_certificate'),
+    passport_or_birth_certificate = models.FileField(upload_to=DocumentsPathAndHash('passport_or_birth_certificate'),
                                                       null=True)  # UF_CRM_1602238184
-    oms_policy = models.ImageField(upload_to=DocumentsPathAndHash('oms_policy'), null=True)  # UF_CRM_1602238239
-    school_ref = models.ImageField(upload_to=DocumentsPathAndHash('school_ref'), null=True)  # UF_CRM_1602238293
-    insurance_policy = models.ImageField(upload_to=DocumentsPathAndHash('insurance_policy'),
+    oms_policy = models.FileField(upload_to=DocumentsPathAndHash('oms_policy'), null=True)  # UF_CRM_1602238239
+    school_ref = models.FileField(upload_to=DocumentsPathAndHash('school_ref'), null=True)  # UF_CRM_1602238293
+    insurance_policy = models.FileField(upload_to=DocumentsPathAndHash('insurance_policy'),
                                          null=True)  # UF_CRM_1602238335
-    tech_qual_diplo = models.ImageField(upload_to=DocumentsPathAndHash('tech_qual_diplo'),
+    tech_qual_diplo = models.FileField(upload_to=DocumentsPathAndHash('tech_qual_diplo'),
                                         null=True)  # UF_CRM_1602238381
-    med_certificate = models.ImageField(upload_to=DocumentsPathAndHash('med_certificate'),
+    med_certificate = models.FileField(upload_to=DocumentsPathAndHash('med_certificate'),
                                         null=True)  # UF_CRM_1602238435
-    foreign_passport = models.ImageField(upload_to=DocumentsPathAndHash('foreign_passport'),
+    foreign_passport = models.FileField(upload_to=DocumentsPathAndHash('foreign_passport'),
                                          null=True)  # UF_CRM_1602238474
-    inn = models.ImageField(upload_to=DocumentsPathAndHash('inn'), null=True)  # UF_CRM_CONTACT_1656319970203
-    diploma = models.ImageField(upload_to=DocumentsPathAndHash('diploma'), null=True)  # UF_CRM_CONTACT_1656319776732
-    snils = models.ImageField(upload_to=DocumentsPathAndHash('snils'), null=True)  # UF_CRM_CONTACT_1656320071632
+    inn = models.FileField(upload_to=DocumentsPathAndHash('inn'), null=True)  # UF_CRM_CONTACT_1656319970203
+    diploma = models.FileField(upload_to=DocumentsPathAndHash('diploma'), null=True)  # UF_CRM_CONTACT_1656319776732
+    snils = models.FileField(upload_to=DocumentsPathAndHash('snils'), null=True)  # UF_CRM_CONTACT_1656320071632
 
     parents = models.ManyToManyField('self', related_name='children', symmetrical=False, blank=True)
     trainer = models.ForeignKey('self', related_name='students', on_delete=models.DO_NOTHING, null=True)
@@ -202,7 +202,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Document(models.Model):
     user = models.ForeignKey(to=User, related_name='other_documents', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=DocumentsPathAndHash('other'))
+    image = models.FileField(upload_to=DocumentsPathAndHash('other'))
 
     class Meta:
         db_table = 'documents'
