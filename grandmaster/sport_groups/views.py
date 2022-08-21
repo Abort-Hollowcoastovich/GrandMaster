@@ -7,7 +7,7 @@ from rest_framework import generics
 
 from authentication.models import User
 from .models import SportGroup
-from .serializers import SportGroupSerializer, SportsmenListSerializer
+from .serializers import SportGroupSerializer, SportsmenSerializer
 from .permissions import IsTrainerOrAdminOrModerOnlyPermissions
 
 
@@ -68,7 +68,7 @@ class SportGroupViewSet(ModelViewSet):
 
 
 class SportsmenList(generics.ListAPIView):
-    serializer_class = SportsmenListSerializer
+    serializer_class = SportsmenSerializer
     permission_classes = [IsTrainerOrAdminOrModerOnlyPermissions]
 
     def get_queryset(self):  # TODO: add filter
