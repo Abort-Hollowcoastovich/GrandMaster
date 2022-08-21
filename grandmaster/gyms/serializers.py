@@ -3,7 +3,19 @@ from rest_framework import serializers
 from .models import Gym
 from authentication.models import User
 
+
+class GymTrainerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'full_name',
+            'photo'
+        ]
+
+
 class GymResponseSerializer(serializers.ModelSerializer):
+    trainers = GymTrainerSerializer(many=True)
     class Meta:
         model = Gym
         fields = [
