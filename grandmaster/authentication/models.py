@@ -177,6 +177,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         middle_name = self.middle_name if self.middle_name else ""
         return " ".join([last_name, first_name, middle_name])
 
+    def get_short_name(self):
+        return self.phone_number
+
     def __str__(self) -> str:
         return self.full_name
 

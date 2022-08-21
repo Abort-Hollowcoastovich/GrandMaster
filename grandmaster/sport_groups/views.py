@@ -7,7 +7,7 @@ from rest_framework import generics
 
 from authentication.models import User
 from .models import SportGroup
-from .serializers import SportGroupSerializer, SportsmenListSerializer
+from .serializers import SportGroupSerializer, SportsmenSerializer
 from .permissions import IsTrainerOrAdminOrModerOnlyPermissions
 
 
@@ -25,6 +25,28 @@ class SportGroupViewSet(ModelViewSet):
             elif user.Group.STUDENT in user:
                 return user.sport_groups
         return SportGroup.objects.none()
+
+    @action(detail=True, methods=['patch'])
+    def fetch_members(self, request, *args, **kwargs):
+        members_list = request.data
+        if type(members_list) != list:
+            pass  # TODO: raise
+        instance = self.get_object()
+        for member_id in members_list:
+            if member_id not in instance.members.all():
+                try:
+                    member = User.objects.get(id=member_id)
+                    instance.members.add(member)
+                except User.DoesNotExist:
+                    return Response({
+                        'status': False,
+                        'details': 'No such user'
+                    }, status=status.HTTP_404_NOT_FOUND)
+        for member in instance.members.all():
+            if member.id not in members_list:
+                instance.members.remove(member)
+        serializer = SportGroupSerializer(instance=instance)
+        return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
     def add_member(self, request, *args, **kwargs):
@@ -68,7 +90,7 @@ class SportGroupViewSet(ModelViewSet):
 
 
 class SportsmenList(generics.ListAPIView):
-    serializer_class = SportsmenListSerializer
+    serializer_class = SportsmenSerializer
     permission_classes = [IsTrainerOrAdminOrModerOnlyPermissions]
 
     def get_queryset(self):  # TODO: add filter
