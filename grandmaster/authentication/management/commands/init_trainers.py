@@ -32,11 +32,13 @@ def create_users():
     with open('result.json', 'r', encoding='utf-8') as file:
         result = json.load(file)
         for person in result:
-            phone_number = person['UF_CRM_1603290188']
-            if phone_number is not None:
-                send_code(phone_number)
-                validate_code(phone_number)
-                print(f'creating {phone_number}')
+            user_type = person['TYPE_ID']
+            if user_type == 'PARTNER':
+                phone_number = person['UF_CRM_1603290188']
+                if phone_number is not None:
+                    print(f'creating trainer {phone_number}')
+                    send_code(phone_number)
+                    validate_code(phone_number)
 
 
 def fetch_users():
