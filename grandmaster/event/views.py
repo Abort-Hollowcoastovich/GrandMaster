@@ -25,8 +25,7 @@ class EventViewSet(ModelViewSet):
         if user.is_authenticated:
             if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
                 return Event.objects.all()
-        else:
-            return Event.objects.filter(hidden=False)
+        return Event.objects.filter(hidden=False)
 
     @action(detail=True, methods=['patch'])
     def add_member(self, request, *args, **kwargs):
