@@ -31,7 +31,7 @@ class GymSerializer(serializers.ModelSerializer):
             'cover',
             'order',
             'trainers',
-            'hidden'
+            'hidden',
         ]
         read_only_fields = ['id']
 
