@@ -14,7 +14,7 @@ class GymResponseSerializer(serializers.ModelSerializer):
             'cover',
             'order',
             'trainers',
-            'trainers',
+            'hidden',
         ]
 
 
