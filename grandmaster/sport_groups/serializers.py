@@ -23,6 +23,13 @@ class SportGroupSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
+class SportGroupPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SportGroup
+        fields = '__all__'
+        read_only_fields = ['id']
+
+
 class SportsmenListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

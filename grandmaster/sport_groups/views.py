@@ -7,13 +7,18 @@ from rest_framework import generics
 
 from authentication.models import User
 from .models import SportGroup
-from .serializers import SportGroupSerializer, SportsmenSerializer
+from .serializers import SportGroupSerializer, SportsmenSerializer, SportGroupPostSerializer
 from .permissions import IsTrainerOrAdminOrModerOnlyPermissions
 
 
 class SportGroupViewSet(ModelViewSet):
     permission_classes = [DjangoModelPermissions]
-    serializer_class = SportGroupSerializer
+
+    def get_serializer_class(self):
+        print(self.action)
+        if self.action == 'create' or self.action == 'update':
+            return SportGroupPostSerializer
+        return SportGroupSerializer
 
     def get_queryset(self):
         user = self.request.user
