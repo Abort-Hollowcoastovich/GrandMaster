@@ -16,6 +16,7 @@ class GymTrainerSerializer(serializers.ModelSerializer):
 
 class GymResponseSerializer(serializers.ModelSerializer):
     trainers = GymTrainerSerializer(many=True)
+
     class Meta:
         model = Gym
         fields = [
@@ -57,7 +58,7 @@ class GymSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
-        return GymResponseSerializer(instance).data
+        return GymResponseSerializer(instance, context=self.context).data
 
     def update(self, instance, validated_data):
         trainers_str = validated_data.pop('trainers', None)
