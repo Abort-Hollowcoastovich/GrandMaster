@@ -1,67 +1,48 @@
-import io
-import base64
-
-from django.core.files import File
+import json
 from rest_framework import serializers
+
 from .models import Event
+from authentication.models import User
+
+
+class EventMembersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'full_name',
+        ]
 
 
 class EventResponseSerializer(serializers.ModelSerializer):
+    members = EventMembersSerializer(many=True)
+
     class Meta:
         model = Event
-        fields = [
-            'id',
-            'name',
-            'description',
-            'address',
-            'start_date',
-            'end_date',
-            'cover',
-            'number',
-            'members',
-            'hidden',
-        ]
-        read_only_fields = ['id']
+        fields = '__all__'
 
 
 class EventSerializer(serializers.ModelSerializer):
-    cover = serializers.CharField()
+    members = serializers.CharField()
 
     class Meta:
         model = Event
-        fields = [
-            'id',
-            'name',
-            'description',
-            'address',
-            'start_date',
-            'end_date',
-            'cover',
-            'number',
-            'members',
-            'hidden',
-        ]
+        fields = '__all__'
         read_only_fields = ['id']
 
-    def update(self, instance, validated_data):
-        cover = validated_data.pop('cover', None)
-        if cover:
-            with io.BytesIO(base64.b64decode(cover)) as stream:
-                django_file = File(stream)
-                instance.cover.save("some_file_name.png", django_file)
-        instance.save()
-        return super().update(instance, validated_data)
-
     def create(self, validated_data):
-        cover = validated_data.pop('cover', None)
+        members = json.loads(validated_data.pop('members', '[]'))
         instance = super().create(validated_data)
-        if cover:
-            with io.BytesIO(base64.b64decode(cover)) as stream:
-                django_file = File(stream)
-                instance.cover.save("some_file_name.png", django_file)
+        instance.members.set(members)
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        members = json.loads(validated_data.pop('members', '[]'))
+        instance = super().update(instance, validated_data)
+        instance.members.set(members)
         instance.save()
         return instance
 
     def to_representation(self, instance):
         return EventResponseSerializer(instance, context=self.context).data
-

@@ -7,18 +7,13 @@ from rest_framework import generics
 
 from authentication.models import User
 from .models import SportGroup
-from .serializers import SportGroupSerializer, SportsmenSerializer, SportGroupPostSerializer
+from .serializers import SportGroupSerializer, SportsmenSerializer
 from .permissions import IsTrainerOrAdminOrModerOnlyPermissions
 
 
 class SportGroupViewSet(ModelViewSet):
     permission_classes = [DjangoModelPermissions]
-
-    def get_serializer_class(self):
-        print(self.action)
-        if self.action == 'create' or self.action == 'update':
-            return SportGroupPostSerializer
-        return SportGroupSerializer
+    serializer_class = SportGroupSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -53,50 +48,9 @@ class SportGroupViewSet(ModelViewSet):
         serializer = SportGroupSerializer(instance=instance)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['patch'])
-    def add_member(self, request, *args, **kwargs):
-        try:
-            user = User.objects.get(pk=request.data['id'])
-        except User.DoesNotExist:
-            return Response({
-                'status': False,
-                'details': 'No such user'
-            }, status=status.HTTP_404_NOT_FOUND)
-        except KeyError:
-            return Response({
-                'status': False,
-                'details': 'Must specify user id in body'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        instance = self.get_object()
-        instance.members.add(user)
-        instance.save()
-        serializer = SportGroupSerializer(instance=instance)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['patch'])
-    def remove_member(self, request, *args, **kwargs):
-        try:
-            user = User.objects.get(pk=request.data['id'])
-        except User.DoesNotExist:
-            return Response({
-                'status': False,
-                'details': 'No such user'
-            }, status=status.HTTP_404_NOT_FOUND)
-        except KeyError:
-            return Response({
-                'status': False,
-                'details': 'Must specify user id in body'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        instance = self.get_object()
-        instance.members.remove(user)
-        instance.save()
-        serializer = SportGroupSerializer(instance=instance)
-        return Response(serializer.data)
-
 
 class SportsmenList(generics.ListAPIView):
+    queryset = User.objects.filter().all()  # TODO: filter
     serializer_class = SportsmenSerializer
     permission_classes = [IsTrainerOrAdminOrModerOnlyPermissions]
 
-    def get_queryset(self):  # TODO: add filter
-        return User.objects.filter().all()

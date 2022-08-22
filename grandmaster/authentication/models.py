@@ -137,7 +137,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     snils = models.FileField(upload_to=DocumentsPathAndHash('snils'), null=True)  # UF_CRM_CONTACT_1656320071632
 
     parents = models.ManyToManyField('self', related_name='children', symmetrical=False, blank=True)
-    trainer = models.ForeignKey('self', related_name='students', on_delete=models.DO_NOTHING, null=True)
+    trainer = models.ForeignKey('self', related_name='students', on_delete=models.SET_NULL, null=True)
 
     def __contains__(self, group_name):
         # Example: User.Group.PARENT in user_object

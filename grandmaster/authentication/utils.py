@@ -109,10 +109,10 @@ def get_user_from_bitrix(phone_number: str):
     foreign_passport = load(result['UF_CRM_1602238474'])
     inn = load(result['UF_CRM_CONTACT_1656319970203'])
     diploma = load(result['UF_CRM_CONTACT_1656319776732'])
-    if result['UF_CRM_CONTACT_1656320071632'] is list:
+    if result['UF_CRM_CONTACT_1656320071632'] is list and len(result['UF_CRM_CONTACT_1656320071632']) > 0:
         snils = load(result['UF_CRM_CONTACT_1656320071632'][0])
     else:
-        snils = load(result['UF_CRM_CONTACT_1656320071632'][0])
+        snils = load(result['UF_CRM_CONTACT_1656320071632'])
     user = User.objects.create_user(
         b24_id=b24_id,
         photo=photo,

@@ -1,12 +1,10 @@
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.viewsets import ModelViewSet
+
+from authentication.models import User
 from .models import Event
 from .serializers import EventSerializer
-from authentication.models import User
-from rest_framework.decorators import action
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -17,8 +15,8 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class EventViewSet(ModelViewSet):
     permission_classes = [DjangoModelPermissions]
-    serializer_class = EventSerializer
     pagination_class = StandardResultsSetPagination
+    serializer_class = EventSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -26,33 +24,3 @@ class EventViewSet(ModelViewSet):
             if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
                 return Event.objects.all()
         return Event.objects.filter(hidden=False)
-
-    @action(detail=True, methods=['patch'])
-    def add_member(self, request, *args, **kwargs):
-        try:
-            user = User.objects.get(pk=request.data['id'])
-        except:
-            return Response({
-                'status': False,
-                'details': 'No such user'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        instance = self.get_object()
-        instance.members.add(user)
-        instance.save()
-        serializer = EventSerializer(instance=instance)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['patch'])
-    def remove_member(self, request, *args, **kwargs):
-        try:
-            user = User.objects.get(pk=request.data['id'])
-        except:
-            return Response({
-                'status': False,
-                'details': 'No such user'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        instance = self.get_object()
-        instance.members.remove(user)
-        instance.save()
-        serializer = EventSerializer(instance=instance)
-        return Response(serializer.data)
