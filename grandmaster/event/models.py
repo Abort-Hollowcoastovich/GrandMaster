@@ -19,9 +19,5 @@ class Event(models.Model):
         db_table = 'events'
         ordering = ['number', 'start_date']
 
-    @property
-    def is_open(self):
-        return self.open
-
     def __str__(self):
         return self.name

@@ -7,7 +7,7 @@ class VisitLog(models.Model):
     #  1) одно расписание - много посещений -> ForeignKey с расписанием вместо OneToOne
     #  2) можно отмечать присутствующих -> ManyToMany с Users
     #  3) дата отметки: DateField (auto_now)
-    day = models.OneToOneField(to=Schedule, related_name='date', on_delete=models.DO_NOTHING, null=True)
+    day = models.OneToOneField(to=Schedule, related_name='date', on_delete=models.SET_NULL, null=True)
 
     class Meta:
         db_table = 'visit_log'

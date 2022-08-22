@@ -31,7 +31,7 @@ class Bill(models.Model):
         YOOKASSA = 'yookassa'
 
     service = models.CharField(max_length=256, default=Services.YOOKASSA, choices=Services.choices)
-    pay_account = models.ForeignKey(to=PayAccount, on_delete=models.DO_NOTHING)
+    pay_account = models.ForeignKey(to=PayAccount, on_delete=models.SET_NULL, null=True)
     purpose = models.CharField(max_length=256)
     amount = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -54,8 +54,8 @@ class Bill(models.Model):
 
 class UserBill(models.Model):
     yookassa_id = models.CharField(max_length=256, null=True, blank=True)  # 23d93cac-000f-5000-8000-126628f15141
-    user = models.ForeignKey(to=User, related_name='bills', on_delete=models.DO_NOTHING)
-    bill = models.ForeignKey(to=Bill, related_name='bill_users', on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(to=User, related_name='bills', on_delete=models.SET_NULL, null=True)
+    bill = models.ForeignKey(to=Bill, related_name='bill_users', on_delete=models.SET_NULL, null=True)
     is_active = models.BooleanField(default=True)
     paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(null=True, blank=True)

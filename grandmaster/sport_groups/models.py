@@ -14,7 +14,8 @@ class SportGroup(models.Model):
         MaxValueValidator(150),
         MinValueValidator(1)
     ])
-    trainer = models.ForeignKey(to=User, related_name='my_groups', on_delete=models.DO_NOTHING, null=True)
+    trainer = models.ForeignKey(to=User, related_name='my_groups',
+                                on_delete=models.SET_NULL, blank=True, null=True)
     members = models.ManyToManyField(to=User, related_name='sport_groups', blank=True)
 
     class Meta:
