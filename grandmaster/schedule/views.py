@@ -20,3 +20,4 @@ class ScheduleViewSet(ModelViewSet):
 
 # TODO (2): добавить поиск нужного расписания согласно фигме:
 #  {"gym_id": int, "sport_group_id: int"} -> [schedules_list]
+
