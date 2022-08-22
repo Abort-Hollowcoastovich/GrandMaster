@@ -25,5 +25,3 @@ class Schedule(models.Model):
         constraints = [
             models.CheckConstraint(check=Q(finish_time__gte=F('start_time')), name='finish_time_gte_start_time')
         ]
-
-
