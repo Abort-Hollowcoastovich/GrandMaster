@@ -4,6 +4,16 @@ from .models import SportGroup
 from authentication.models import User
 
 
+class TrainerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'full_name',
+            'photo'
+        ]
+
+
 class SportsmenSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

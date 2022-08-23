@@ -1,14 +1,11 @@
-from rest_framework.decorators import action
-from rest_framework import status
-from rest_framework.permissions import DjangoModelPermissions
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework import generics
+from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 
 from authentication.models import User
 from .models import SportGroup
-from .serializers import SportGroupSerializer, SportsmenSerializer
 from .permissions import IsTrainerOrAdminOrModerOnlyPermissions
+from .serializers import SportGroupSerializer, SportsmenSerializer, TrainerSerializer
 
 
 class SportGroupViewSet(ModelViewSet):
@@ -26,31 +23,23 @@ class SportGroupViewSet(ModelViewSet):
                 return user.sport_groups
         return SportGroup.objects.none()
 
-    @action(detail=True, methods=['patch'])
-    def fetch_members(self, request, *args, **kwargs):
-        members_list = request.data
-        if type(members_list) != list:
-            pass  # TODO: raise
-        instance = self.get_object()
-        for member_id in members_list:
-            if member_id not in instance.members.all():
-                try:
-                    member = User.objects.get(id=member_id)
-                    instance.members.add(member)
-                except User.DoesNotExist:
-                    return Response({
-                        'status': False,
-                        'details': 'No such user'
-                    }, status=status.HTTP_404_NOT_FOUND)
-        for member in instance.members.all():
-            if member.id not in members_list:
-                instance.members.remove(member)
-        serializer = SportGroupSerializer(instance=instance)
-        return Response(serializer.data)
-
 
 class SportsmenList(generics.ListAPIView):
-    queryset = User.objects.filter().all()  # TODO: filter
     serializer_class = SportsmenSerializer
     permission_classes = [IsTrainerOrAdminOrModerOnlyPermissions]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
+                return User.objects.all()
+            elif User.Group.TRAINER in user:
+                # return User.objects.filter(trainer=self.request.user)
+                return User.objects.all()  # TODO: filter(trainer=self.request.user)
+        return SportGroup.objects.none()
+
+
+class TrainersList(generics.ListAPIView):
+    queryset = User.objects.filter(contact_type=User.CONTACT.TRAINER).all()
+    serializer_class = TrainerSerializer
+    permission_classes = [IsAuthenticated]
