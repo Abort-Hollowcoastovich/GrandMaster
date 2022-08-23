@@ -178,7 +178,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return " ".join([last_name, first_name, middle_name])
 
     def get_short_name(self):
-        return self.phone_number
+        return f'{self.phone_number} {self.full_name}'
 
     def __str__(self) -> str:
         return self.full_name

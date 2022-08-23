@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = "Creates users"
 
     def handle(self, *args, **options):
-        # fetch_users()
+        fetch_users()
         create_users()
 
 

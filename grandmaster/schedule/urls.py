@@ -1,11 +1,11 @@
 from django.urls import path, include
-from .views import *
+from .views import ScheduleViewSet
 from rest_framework.routers import DefaultRouter
 
 
 router = DefaultRouter()
 
-router.register(r'', ScheduleViewSet, basename='visit_log')
+router.register(r'', ScheduleViewSet, basename='schedule')
 
 
 urlpatterns = [

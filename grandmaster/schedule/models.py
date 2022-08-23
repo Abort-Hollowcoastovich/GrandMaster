@@ -18,10 +18,7 @@ class Schedule(models.Model):
     start_time = models.TimeField()
     finish_time = models.TimeField()
     gym = models.ForeignKey(to=Gym, related_name='schedules', on_delete=models.SET_NULL, null=True, blank=True)
-    group = models.ForeignKey(to=SportGroup, related_name='schedules', on_delete=models.SET_NULL, null=True, blank=True)
+    sport_group = models.ForeignKey(to=SportGroup, related_name='schedules', on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
-        db_table = 'schedule'
-        constraints = [
-            models.CheckConstraint(check=Q(finish_time__gte=F('start_time')), name='finish_time_gte_start_time')
-        ]
+        db_table = 'schedules'
