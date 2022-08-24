@@ -15,5 +15,7 @@ def webhook(request):
     except Exception:
         raise BadRequest
     if event == 'ONCRMCONTACTUPDATE':
-        print('bitrix update', event, id)  # update
+        print(f'bitrix update: event:{event}, id:{_id}')  # TODO: update
+    else:
+        print(f'not bitrix update event: event:{event}, id:{_id}')
     return Response(status=200)

@@ -68,6 +68,11 @@ class CurrentBillsList(APIView):
 def pay_bill(request, bill_id):
     try:
         bill = UserBill.objects.get(id=bill_id)
+        if bill.is_paid:
+            return Response({
+                'status': False,
+                'details': 'Bill is already paid'
+            }, status=status.HTTP_403_FORBIDDEN)
         payment = create_payment(amount=bill.bill.amount, description=str(bill), pay_account=bill.bill.pay_account)
         bill.yookassa_id = payment.id
         bill.save()
