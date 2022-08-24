@@ -27,7 +27,8 @@ def webhook(request):
             map_user(user, mock_user)
         except User.DoesNotExist as e:
             logger.error(f"can't find user for bitrix id at webhook update: error: {e}")
-        return Response(status=400)
+            return Response(status=400, data={f'no such user'})
+        return Response(status=200)
     else:
         logger.info(f'not bitrix update event: event:{event}, id:{_id}')
     return Response(status=200)
@@ -51,7 +52,7 @@ def map_user(user, mock_user):
     user.tech_qualification = mock_user.tech_qualification
     user.sport_qualification = mock_user.sport_qualification
     user.weight = mock_user.weight
-    user.height = mock_user.weight
+    user.height = mock_user.height
 
     user.region = mock_user.region
     user.contact_type = mock_user.city
