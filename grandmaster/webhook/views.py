@@ -55,7 +55,7 @@ def map_user(user, mock_user):
     user.height = mock_user.height
 
     user.region = mock_user.region
-    user.contact_type = mock_user.city
+    user.city = mock_user.city
     user.address = mock_user.address
     user.school = mock_user.school
     user.med_certificate_date = mock_user.med_certificate_date
