@@ -22,3 +22,6 @@ class Schedule(models.Model):
 
     class Meta:
         db_table = 'schedules'
+
+    def __str__(self):
+        return f'weekday:{self.weekday} gym_id:{self.gym.id} sport_group_id:{self.sport_group.id}'

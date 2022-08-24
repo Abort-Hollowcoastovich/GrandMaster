@@ -2,6 +2,7 @@ import json
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework import serializers
+from rest_framework.exceptions import NotFound
 
 from .models import News, NewsImage
 
@@ -75,8 +76,8 @@ class NewsSerializer(serializers.ModelSerializer):
                         image = NewsImage.objects.get(id=key)
                         image.image = value
                         image.save()
-                    except NewsImage.DoesNotExist as e:
-                        pass  # TODO: raise 404
+                    except NewsImage.DoesNotExist:
+                        raise NotFound
                 else:
                     instance.images.add(NewsImage.objects.create(news=instance, image=value))
         instance.save()

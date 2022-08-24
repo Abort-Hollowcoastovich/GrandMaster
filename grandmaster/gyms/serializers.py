@@ -1,17 +1,50 @@
 import json
+
+from django.db.models import Count
 from rest_framework import serializers
 
+from schedule.models import Schedule
 from .models import Gym
 from authentication.models import User
 
 
+class SchedulesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = '__all__'
+
+
 class TrainerSerializer(serializers.ModelSerializer):
+    schedules = serializers.SerializerMethodField()
+
+    def get_schedules(self, obj):
+        schedules = Schedule.objects.filter(sport_group__trainer=obj)
+        data = []
+        grouped = dict()
+        for obj in schedules:
+            grouped.setdefault(obj.sport_group, []).append(obj)
+        for key, values in grouped.items():
+            grouped_by_time = dict()
+            for value in values:
+                grouped_by_time.setdefault((value.start_time, value.finish_time), []).append(value)
+            data.append({
+                "min_age": key.min_age,
+                "max_age": key.max_age,
+                "items": [{
+                    "start_time": key[0].strftime("%H:%M"),
+                    "finish_time": key[1].strftime("%H:%M"),
+                    "weekdays": [value.weekday for value in values]
+                } for key, values in grouped_by_time.items()]
+            })
+        return data
+
     class Meta:
         model = User
         fields = [
             'id',
             'full_name',
-            'photo'
+            'photo',
+            'schedules'
         ]
 
 
