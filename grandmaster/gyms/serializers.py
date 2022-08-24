@@ -1,7 +1,9 @@
 import json
+from json import JSONDecodeError
 
 from django.db.models import Count
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from schedule.models import Schedule
 from .models import Gym
@@ -65,18 +67,25 @@ class GymSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
     def create(self, validated_data):
-        trainers = json.loads(validated_data.pop('trainers', '[]'))
+        trainers = self.get_items(validated_data, 'trainers')
         instance = super().create(validated_data)
         instance.trainers.set(trainers)
         instance.save()
         return instance
 
     def update(self, instance, validated_data):
-        trainers = json.loads(validated_data.pop('trainers', '[]'))
+        trainers = self.get_items(validated_data, 'trainers')
         instance = super().update(instance, validated_data)
         instance.trainers.set(trainers)
         instance.save()
         return instance
+
+    def get_items(self, validated_data, string):
+        try:
+            result = json.loads(validated_data.pop(string, '[]'))
+        except JSONDecodeError:
+            raise ValidationError
+        return result
 
     def to_representation(self, instance):
         return GymResponseSerializer(instance, context=self.context).data

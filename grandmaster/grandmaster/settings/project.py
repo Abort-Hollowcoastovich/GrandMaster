@@ -47,3 +47,10 @@ OTP_EXPIRATION_SECONDS = env.int("OTP_EXPIRATION_SECONDS")
 
 # BITRIX:
 # WEBHOOK_URL
+CLIENT_ID = env.str('CLIENT_ID')
+CLIENT_SECRET = env.str('CLIENT_SECRET')
+
+REFRESH_TOKEN_URL = 'https://oauth.bitrix.info/oauth/token/'
+TOKENS_FILEPATH = 'tokens.json'
+BITRIX_DOMAIN = 'https://gm61.bitrix24.ru'
+MAX_TOKEN_REFRESH_TIMES = 10

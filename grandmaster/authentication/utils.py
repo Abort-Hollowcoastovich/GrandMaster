@@ -71,7 +71,8 @@ def get_user_from_bitrix(phone_number: str):
     photo = load(result['PHOTO'])
     gender = result['HONORIFIC']
     first_name = result['NAME']
-    last_name = result['SECOND_NAME']
+    last_name = result['LAST_NAME']
+    middle_name = result['SECOND_NAME']
     birth_date = make_date(result['BIRTHDATE'])
     contact_type = result['TYPE_ID']
     phone_number = result['UF_CRM_1603290188']
@@ -101,6 +102,8 @@ def get_user_from_bitrix(phone_number: str):
     mother_birth_date = make_date(result['UF_CRM_1602241804'])
     mother_phone_number = result['UF_CRM_1602241833']
     mother_email = result['UF_CRM_1602241870']
+
+    passport_or_birth_certificate = load(result['UF_CRM_1602238184'])
     oms_policy = load(result['UF_CRM_1602238239'])
     school_ref = load(result['UF_CRM_1602238293'])
     insurance_policy = load(result['UF_CRM_1602238335'])
@@ -119,6 +122,7 @@ def get_user_from_bitrix(phone_number: str):
         gender=gender,
         first_name=first_name,
         last_name=last_name,
+        middle_name=middle_name,
         birth_date=birth_date,
         contact_type=contact_type,
         phone_number=phone_number,
@@ -144,6 +148,7 @@ def get_user_from_bitrix(phone_number: str):
         mother_birth_date=mother_birth_date,
         mother_phone_number=mother_phone_number,
         mother_email=mother_email,
+        passport_or_birth_certificate=passport_or_birth_certificate,
         oms_policy=oms_policy,
         school_ref=school_ref,
         insurance_policy=insurance_policy,
