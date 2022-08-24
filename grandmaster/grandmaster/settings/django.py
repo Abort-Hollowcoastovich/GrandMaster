@@ -10,8 +10,8 @@ WSGI_APPLICATION = 'grandmaster.wsgi.application'
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 INSTALLED_APPS = [
-    'event',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'corsheaders',
     'django.contrib.admin',
@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication',
     'sequences.apps.SequencesConfig',
+    'event',
     'news',
     'profiles',
     'instructions',

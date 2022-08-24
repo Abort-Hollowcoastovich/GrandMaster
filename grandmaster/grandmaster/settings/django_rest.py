@@ -1,4 +1,7 @@
 from datetime import timedelta
+
+import rest_framework_simplejwt.authentication
+
 from .common import env, SECRET_KEY
 
 REST_FRAMEWORK = {
@@ -15,7 +18,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=env.int('ACCESS_TOKEN_LIFETIME_MINUTES', default=5)),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=env.int('REFRESH_TOKEN_LIFETIME_DAYS', default=1)),
     'ROTATE_REFRESH_TOKENS': env.bool('ROTATE_REFRESH_TOKENS', default=True),
-    'BLACKLIST_AFTER_ROTATION': False,
+    'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
 
     'ALGORITHM': 'HS256',

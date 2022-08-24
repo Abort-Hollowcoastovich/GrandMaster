@@ -6,13 +6,13 @@ from gyms.models import Gym
 
 class Schedule(models.Model):
     class WeekDay(models.TextChoices):
-        MONDAY = 'MN'
-        TUESDAY = 'TU'
-        WEDNESDAY = 'WE'
-        THURSDAY = 'TH'
-        FRIDAY = 'FR'
-        SATURDAY = 'SA'
-        SUNDAY = 'SU'
+        MONDAY = 'monday'
+        TUESDAY = 'tuesday'
+        WEDNESDAY = 'wednesday'
+        THURSDAY = 'thursday'
+        FRIDAY = 'friday'
+        SATURDAY = 'saturday'
+        SUNDAY = 'sunday'
 
     weekday = models.CharField(choices=WeekDay.choices, max_length=10)
     start_time = models.TimeField()

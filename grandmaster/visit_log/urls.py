@@ -1,13 +1,7 @@
-from django.urls import path, include
-from .views import *
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-
-router = DefaultRouter()
-
-router.register(r'', VisitLogViewSet, basename='sport_groups')
-
+from .views import ScheduleView
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', ScheduleView.as_view()),
 ]

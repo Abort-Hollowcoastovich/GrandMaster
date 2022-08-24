@@ -85,13 +85,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     b24_id = models.CharField(max_length=100, null=True)  # ID
-    photo = models.ImageField(upload_to=UserPathAndHash('photo'), null=True)  # PHOTO
+    photo = models.ImageField(upload_to=UserPathAndHash('photo'), null=True, blank=True)  # PHOTO
     gender = models.CharField(max_length=100, null=True)  # HONORIFIC
     first_name = models.CharField(max_length=100, null=True)  # NAME
     last_name = models.CharField(max_length=100, null=True)  # LAST_NAME
     middle_name = models.CharField(max_length=100, null=True)  # SECOND_NAME
     birth_date = models.DateTimeField(null=True)  # BIRTHDATE
-    contact_type = models.CharField(max_length=100, null=True)  # TYPE_ID
+    contact_type = models.CharField(max_length=100, null=True, blank=True)  # TYPE_ID
     phone_number = models.CharField(max_length=100, unique=True)  # UF_CRM_1603290188
 
     sport_school = models.CharField(max_length=200, null=True)  # UF_CRM_1602237440
@@ -121,17 +121,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     mother_email = models.EmailField(null=True)  # UF_CRM_1602241870
 
     passport_or_birth_certificate = models.FileField(upload_to=DocumentsPathAndHash('passport_or_birth_certificate'),
-                                                      null=True)  # UF_CRM_1602238184
+                                                     null=True)  # UF_CRM_1602238184
     oms_policy = models.FileField(upload_to=DocumentsPathAndHash('oms_policy'), null=True)  # UF_CRM_1602238239
     school_ref = models.FileField(upload_to=DocumentsPathAndHash('school_ref'), null=True)  # UF_CRM_1602238293
     insurance_policy = models.FileField(upload_to=DocumentsPathAndHash('insurance_policy'),
-                                         null=True)  # UF_CRM_1602238335
+                                        null=True)  # UF_CRM_1602238335
     tech_qual_diplo = models.FileField(upload_to=DocumentsPathAndHash('tech_qual_diplo'),
-                                        null=True)  # UF_CRM_1602238381
+                                       null=True)  # UF_CRM_1602238381
     med_certificate = models.FileField(upload_to=DocumentsPathAndHash('med_certificate'),
-                                        null=True)  # UF_CRM_1602238435
+                                       null=True)  # UF_CRM_1602238435
     foreign_passport = models.FileField(upload_to=DocumentsPathAndHash('foreign_passport'),
-                                         null=True)  # UF_CRM_1602238474
+                                        null=True)  # UF_CRM_1602238474
     inn = models.FileField(upload_to=DocumentsPathAndHash('inn'), null=True)  # UF_CRM_CONTACT_1656319970203
     diploma = models.FileField(upload_to=DocumentsPathAndHash('diploma'), null=True)  # UF_CRM_CONTACT_1656319776732
     snils = models.FileField(upload_to=DocumentsPathAndHash('snils'), null=True)  # UF_CRM_CONTACT_1656320071632
@@ -197,7 +197,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_active(self):
-        return self.active
+        if self.contact_type:
+            return self.active and bool(self.contact_type.strip())
+        return False
 
 
 class Document(models.Model):

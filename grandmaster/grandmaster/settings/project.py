@@ -2,7 +2,6 @@ from .common import (
     DEBUG,
     env,
 )
-from yookassa import Configuration
 
 # Custom settings
 
@@ -27,12 +26,12 @@ GROUPS = {
         "gym": ["add", "delete", "change"],
         "event": ["add", "delete", "change"],
         "content": ["add", "delete", "change"],
-        "visit_log": ["add", "delete", "change"],
+        "visit log": ["add", "delete", "change"],
     },
     "Trainer": {
         "sport group": ["add", "delete", "change"],
         "schedule": ["add", "delete", "change"],
-        "visit_log": ["add", "delete", "change"],
+        "visit log": ["add", "delete", "change"],
     },
     "Student": {
     },
