@@ -15,7 +15,8 @@ def serialize_schedules(sport_group_id: int, gym_id: int, schedules):
         days[weekday] = []
         items = schedules.filter(weekday=weekday)
         if items.exists():
-            days[weekday] = [items[0].start_time, items[0].finish_time]
+            days[weekday] = [items[0].start_time.strftime("%H:%M"),
+                             items[0].finish_time.strftime("%H:%M")]
     return {
         'gym': gym_id,
         'sport_group': sport_group_id,
