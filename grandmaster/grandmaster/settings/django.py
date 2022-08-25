@@ -10,6 +10,7 @@ WSGI_APPLICATION = 'grandmaster.wsgi.application'
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 INSTALLED_APPS = [
+    'channels',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     'videos',
     'visit_log',
     'schedule',
+    'chats',
 ]
 
 DATABASES = {
@@ -141,6 +143,19 @@ LOGGING = {
         },
     }
 }
+
+# CHANNELS
+ASGI_APPLICATION = "grandmaster.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 
 # DEPLOY
 SECURE_HSTS_SECONDS = 30  # Unit is seconds; *USE A SMALL VALUE FOR TESTING!*
