@@ -139,9 +139,14 @@ class ScheduleView(APIView):
         if set(days.keys()) != set([choice for choice, _ in Schedule.WeekDay.choices]):
             raise ValidationError('Wrong weekdays')
         # VALIDATION END
+        print(days)
         for weekday, _ in Schedule.WeekDay.choices:
             times = days[weekday]
-            items = Schedule.objects.filter(weekday=weekday)
+            items = Schedule.objects.filter(
+                gym_id=gym_id,
+                sport_group_id=sport_group_id,
+                weekday=weekday
+            )
             if items.exists() and not times:
                 items.delete()
             elif not items.exists() and times:
@@ -152,6 +157,11 @@ class ScheduleView(APIView):
                     gym_id=gym_id,
                     sport_group_id=sport_group_id,
                 )
+            elif items.exists() and times:
+                schedule = schedules[0]
+                schedule.start_time = times[0]
+                schedule.finish_time = times[1]
+                schedule.save()
         schedule_objects = Schedule.objects.filter(
             gym_id=gym_id,
             sport_group_id=sport_group_id

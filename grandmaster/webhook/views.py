@@ -44,7 +44,7 @@ def map_user(user, mock_user):
     user.birth_date = mock_user.birth_date
     user.contact_type = mock_user.contact_type
     user.phone_number = mock_user.phone_number
-
+    # TODO: change gym and trainer
     user.sport_school = mock_user.sport_school
     user.department = mock_user.department
     user.trainer_name = mock_user.trainer_name
@@ -60,12 +60,12 @@ def map_user(user, mock_user):
     user.school = mock_user.school
     user.med_certificate_date = mock_user.med_certificate_date
     user.insurance_policy_date = mock_user.insurance_policy_date
-
+    # TODO: change father
     user.father_full_name = mock_user.father_full_name
     user.father_birth_date = mock_user.father_birth_date
     user.father_phone_number = mock_user.father_phone_number
     user.father_email = mock_user.father_email
-
+    # TODO: change mother
     user.mother_full_name = mock_user.mother_full_name
     user.mother_birth_date = mock_user.mother_birth_date
     user.mother_phone_number = mock_user.mother_phone_number

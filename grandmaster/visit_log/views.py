@@ -1,14 +1,12 @@
-from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime, date
 
-from django_filters.rest_framework import DjangoFilterBackend
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
 
 from authentication.models import User
 from schedule.models import Schedule
@@ -27,20 +25,12 @@ class ScheduleView(APIView):
             return VisitLog.objects.filter(schedule__sport_group__trainer=user)
         return VisitLog.objects.none()
 
-    # TODO
-    # def check_time(self, start_time, finish_time):
-    #     now_time = timezone.now().time()
-    #     if now_time < start_time and (start_time - now_time) > timedelta(minutes=30):
-    #         raise ValidationError
-    #     elif now_time > finish_time and (now_time - finish_time) > timedelta(minutes=30):
-    #         raise ValidationError
-
-    def get_object(self) -> VisitLog:
+    def get_schedule(self):
         params = self.request.query_params
         gym_id = params.get('gym', None)
         sport_group_id = params.get('sport_group', None)
         if not (gym_id and sport_group_id):
-            raise ValidationError
+            raise ValidationError('Need both ids in params')
         now_timedate = timezone.now()
         weekday = now_timedate.strftime('%A').lower()
         schedules = Schedule.objects.filter(
@@ -48,28 +38,78 @@ class ScheduleView(APIView):
             gym_id=gym_id,
             sport_group_id=sport_group_id,
         )
-        print(schedules)
-        # TODO
+        if not schedules.exists():
+            return None
+        return schedules[0]
+
+    def get_object(self, queryset=None):
+        schedule = self.get_schedule()
+        if schedule is None:
+            return None
+        date = timezone.now().date()
+        visit_logs = VisitLog.objects.filter(
+            mark_datetime__day=date.day,
+            mark_datetime__month=date.month,
+            mark_datetime__year=date.year,
+            schedule=schedule,
+        )
+        if visit_logs.exists():
+            return visit_logs[0]
         return None
 
     def get(self, request: Request):
         visit_log = self.get_object()
         if visit_log is None:
-            raise NotFound
+            raise NotFound('Not found')
         return Response(VisitLogSerializer(visit_log).data, status=status.HTTP_200_OK)
 
     def post(self, request: Request):
         visit_log = self.get_object()
         if visit_log is not None:
-            return Response(status=status.HTTP_409_CONFLICT)
-        visit_log = None  # TODO
+            return Response(status=status.HTTP_409_CONFLICT, data='Already exists')
+        schedule = self.get_schedule()
+        if schedule is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data='No schedule for this gym with this sport group at this weekday')
+        self.check_time(schedule)
+        data = request.data
+        attending = data.get('attending', None)
+        if attending is None:
+            raise ValidationError('Need attending')
+        visit_log = VisitLog.objects.create(
+            schedule=schedule,
+        )
+        visit_log.attending.set(attending)
+        visit_log.save()
         return Response(VisitLogSerializer(visit_log).data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request: Request):
+        visit_log = self.get_object()
+        if visit_log is None:
+            raise NotFound
+        visit_log.delete()
+        return Response("Successful delete", status=status.HTTP_200_OK)
 
     def put(self, request: Request):
         visit_log = self.get_object()
         if visit_log is None:
-            raise NotFound
-        visit_log = None  # TODO
+            raise NotFound('Nothing to change')
+        self.check_time(visit_log.schedule)
+        data = request.data
+        attending = data.get('attending', None)
+        if attending is None:
+            raise ValidationError('Need attending to chagne')
+        visit_log.attending.set(attending)
+        visit_log.save()
         return Response(VisitLogSerializer(visit_log).data, status=status.HTTP_205_RESET_CONTENT)
+
+    def check_time(self, schedule, delta=30):
+        start_time = datetime.combine(timezone.now().date(), schedule.start_time)
+        finish_time = datetime.combine(timezone.now().date(), schedule.finish_time)
+        now_time = timezone.now()
+        if (now_time < start_time) and ((start_time - now_time) > timedelta(minutes=delta)):
+            raise ValidationError('Too early')
+        elif (now_time > finish_time) and ((now_time - finish_time) > timedelta(minutes=delta)):
+            raise ValidationError('Too late')
 
 # TODO: добавить эндпоинт для формирования отчета
