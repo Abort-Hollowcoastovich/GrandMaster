@@ -1,8 +1,11 @@
+import os
+import uuid
 from datetime import timedelta, datetime
 
+import xlsxwriter as xlsxwriter
 from django.utils import timezone
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.request import Request
@@ -11,8 +14,11 @@ from rest_framework.views import APIView
 
 from authentication.models import User
 from schedule.models import Schedule
+from schedule.serializers import ScheduleSerializer
+from sport_groups.permissions import IsTrainerOrAdminOrModerOnlyPermissions
 from .models import VisitLog
 from .serializers import VisitLogSerializer
+from grandmaster.settings import MEDIA_ROOT, MEDIA_URL
 
 
 class ScheduleView(APIView):
@@ -59,15 +65,14 @@ class ScheduleView(APIView):
         return None
 
     def get(self, request: Request):
+        schedule = self.get_schedule()
+        self.check_time(schedule)
         visit_log = self.get_object()
         if visit_log is None:
-            raise NotFound('Not found')
+            return Response({'schedule': ScheduleSerializer(schedule).data, 'attending': []}, status=status.HTTP_200_OK)
         return Response(VisitLogSerializer(visit_log).data, status=status.HTTP_200_OK)
 
     def post(self, request: Request):
-        visit_log = self.get_object()
-        if visit_log is not None:
-            return Response(status=status.HTTP_409_CONFLICT, data='Already exists')
         schedule = self.get_schedule()
         if schedule is None:
             return Response(status=status.HTTP_400_BAD_REQUEST,
@@ -77,12 +82,14 @@ class ScheduleView(APIView):
         attending = data.get('attending', None)
         if attending is None:
             raise ValidationError('Need attending')
-        visit_log = VisitLog.objects.create(
-            schedule=schedule,
-        )
+        visit_log = self.get_object()
+        if visit_log is None:
+            visit_log = VisitLog.objects.create(
+                schedule=schedule,
+            )
         visit_log.attending.set(attending)
         visit_log.save()
-        return Response(VisitLogSerializer(visit_log).data, status=status.HTTP_201_CREATED)
+        return Response(VisitLogSerializer(visit_log).data, status=status.HTTP_200_OK)
 
     def delete(self, request: Request):
         visit_log = self.get_object()
@@ -90,19 +97,6 @@ class ScheduleView(APIView):
             raise NotFound
         visit_log.delete()
         return Response("Successful delete", status=status.HTTP_200_OK)
-
-    def put(self, request: Request):
-        visit_log = self.get_object()
-        if visit_log is None:
-            raise NotFound('Nothing to change')
-        self.check_time(visit_log.schedule)
-        data = request.data
-        attending = data.get('attending', None)
-        if attending is None:
-            raise ValidationError('Need attending to chagne')
-        visit_log.attending.set(attending)
-        visit_log.save()
-        return Response(VisitLogSerializer(visit_log).data, status=status.HTTP_205_RESET_CONTENT)
 
     def check_time(self, schedule, delta=30):
         start_time = datetime.combine(timezone.now().date(), schedule.start_time)
@@ -114,8 +108,8 @@ class ScheduleView(APIView):
             raise ValidationError('Too late')
 
 
-# TODO: добавить эндпоинт для формирования отчета
 @api_view(['GET'])
+@permission_classes([IsTrainerOrAdminOrModerOnlyPermissions])
 def make_report(request: Request):
     params = request.query_params
     sport_group_id = params.get('sport_group', None)
@@ -135,5 +129,31 @@ def make_report(request: Request):
         mark_datetime__gte=start_datetime,
         mark_datetime__lte=end_datetime,
     )
-    print(visit_logs)
-    return Response(data='ok', status=200)
+    for visit_log in visit_logs:
+        date = visit_log.mark_datetime
+        sport_group_name = visit_log.schedule.sport_group.name
+        trainer_full_name = visit_log.schedule.sport_group.trainer.full_name
+        students = visit_log.attending.all()
+        data = []
+        for student in students:
+            data.append([str(date), student.full_name, sport_group_name, trainer_full_name])
+        headers = ['Дата', 'Спортсмен', 'Спортивная группа', 'Тренер']
+        filename = get_file_name('report.xlsx')
+        filepath = os.path.join(os.path.join(MEDIA_ROOT, 'reports'), filename)
+        save_to_file(filepath, data, headers)
+    return Response(data={'url': 'https://' + request.get_host() + MEDIA_URL + 'reports/' + filename}, status=200)
+
+
+def get_file_name(base_name):
+    return uuid.uuid4().hex + base_name
+
+
+def save_to_file(filename, data: list[str], header: list[str]):
+    data = [header] + data
+    print(data)
+    workbook = xlsxwriter.Workbook(filename)
+    worksheet = workbook.add_worksheet()
+    for row, items in enumerate(data):
+        for col, item in enumerate(items):
+            worksheet.write(row, col, item)
+    workbook.close()
