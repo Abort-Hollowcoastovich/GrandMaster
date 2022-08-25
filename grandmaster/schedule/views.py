@@ -139,7 +139,6 @@ class ScheduleView(APIView):
         if set(days.keys()) != set([choice for choice, _ in Schedule.WeekDay.choices]):
             raise ValidationError('Wrong weekdays')
         # VALIDATION END
-        print(days)
         for weekday, _ in Schedule.WeekDay.choices:
             times = days[weekday]
             items = Schedule.objects.filter(

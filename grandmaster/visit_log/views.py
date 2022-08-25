@@ -1,7 +1,8 @@
-from datetime import timedelta, datetime, date
+from datetime import timedelta, datetime
 
 from django.utils import timezone
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.request import Request
@@ -112,4 +113,27 @@ class ScheduleView(APIView):
         elif (now_time > finish_time) and ((now_time - finish_time) > timedelta(minutes=delta)):
             raise ValidationError('Too late')
 
+
 # TODO: добавить эндпоинт для формирования отчета
+@api_view(['GET'])
+def make_report(request: Request):
+    params = request.query_params
+    sport_group_id = params.get('sport_group', None)
+    start_datetime = params.get('start_datetime', None)
+    end_datetime = params.get('end_datetime', None)
+    try:
+        start_datetime = datetime.fromisoformat(start_datetime)
+        end_datetime = datetime.fromisoformat(end_datetime)
+    except ValueError:
+        raise ValidationError('Invalid isoformat string')
+    if not (sport_group_id and start_datetime and end_datetime):
+        raise ValidationError('Not all params')
+    if not (sport_group_id.isdigit()):
+        raise ValidationError('Id must be integer')
+    visit_logs = VisitLog.objects.filter(
+        schedule__sport_group_id=sport_group_id,
+        mark_datetime__gte=start_datetime,
+        mark_datetime__lte=end_datetime,
+    )
+    print(visit_logs)
+    return Response(data='ok', status=200)
