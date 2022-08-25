@@ -66,6 +66,9 @@ class ScheduleView(APIView):
 
     def get(self, request: Request):
         schedule = self.get_schedule()
+        if schedule is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data='No schedule for this gym with this sport group at this weekday')
         self.check_time(schedule)
         visit_log = self.get_object()
         if visit_log is None:
