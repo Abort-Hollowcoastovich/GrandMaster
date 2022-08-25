@@ -1,4 +1,4 @@
-from rest_framework.pagination import PageNumberPagination
+# from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.viewsets import ModelViewSet
 
@@ -7,15 +7,15 @@ from .models import Event
 from .serializers import EventSerializer
 
 
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 1000
+# class StandardResultsSetPagination(PageNumberPagination):
+#     page_size = 10
+#     page_size_query_param = 'page_size'
+#     max_page_size = 1000
 
 
 class EventViewSet(ModelViewSet):
     permission_classes = [DjangoModelPermissions]
-    pagination_class = StandardResultsSetPagination
+    # pagination_class = StandardResultsSetPagination
     serializer_class = EventSerializer
 
     def get_queryset(self):

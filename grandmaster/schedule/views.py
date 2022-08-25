@@ -102,6 +102,9 @@ class ScheduleView(APIView):
             raise ValidationError('Need all weekdays')
         if set(days.keys()) != set([choice for choice, _ in Schedule.WeekDay.choices]):
             raise ValidationError('Wrong weekdays')
+        for key in days.keys():
+            if days[key] == ['', '']:
+                days[key] = []
         for weekday, times in days.items():
             if len(times) == 2:
                 Schedule.objects.create(
@@ -138,6 +141,9 @@ class ScheduleView(APIView):
             raise ValidationError('Need all weekdays')
         if set(days.keys()) != set([choice for choice, _ in Schedule.WeekDay.choices]):
             raise ValidationError('Wrong weekdays')
+        for key in days.keys():
+            if days[key] == ['', '']:
+                days[key] = []
         # VALIDATION END
         for weekday, _ in Schedule.WeekDay.choices:
             times = days[weekday]
