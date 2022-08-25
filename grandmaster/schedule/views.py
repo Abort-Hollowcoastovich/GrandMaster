@@ -51,8 +51,9 @@ class ScheduleView(APIView):
         sport_group_id = params.get('sport_group', None)
         if gym_id is None or sport_group_id is None:
             raise ValidationError("Need both ids")
-        if not gym_id.isdigit() or not sport_group_id.isdigit():
-            raise ValidationError("Wrong format")
+        if not (type(gym_id) is int and type(sport_group_id) is int):
+            if not (gym_id.isdigit() and sport_group_id.isdigit()):
+                raise ValidationError("Wrong format")
         schedules = Schedule.objects.filter(
             gym_id=gym_id,
             sport_group_id=sport_group_id
@@ -68,8 +69,9 @@ class ScheduleView(APIView):
         sport_group_id = data.get('sport_group', None)
         if gym_id is None or sport_group_id is None:
             raise ValidationError("Need both ids")
-        if not (gym_id.isdigit() and sport_group_id.isdigit()):
-            raise ValidationError("Wrong format")
+        if not (type(gym_id) is int and type(sport_group_id) is int):
+            if not (gym_id.isdigit() and sport_group_id.isdigit()):
+                raise ValidationError("Wrong format")
         schedules = Schedule.objects.filter(
             gym_id=gym_id,
             sport_group_id=sport_group_id
@@ -107,8 +109,9 @@ class ScheduleView(APIView):
         sport_group_id = data.get('sport_group', None)
         if gym_id is None or sport_group_id is None:
             raise ValidationError("Need both ids")
-        if not (gym_id.isdigit() and sport_group_id.isdigit()):
-            raise ValidationError("Wrong format")
+        if not (type(gym_id) is int and type(sport_group_id) is int):
+            if not (gym_id.isdigit() and sport_group_id.isdigit()):
+                raise ValidationError("Wrong format")
         schedules = Schedule.objects.filter(
             gym_id=gym_id,
             sport_group_id=sport_group_id
