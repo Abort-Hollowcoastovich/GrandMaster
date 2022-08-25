@@ -148,7 +148,7 @@ def get_file_name(base_name):
     return uuid.uuid4().hex + base_name
 
 
-def save_to_file(filename, data: list[str], header: list[str]):
+def save_to_file(filename, data, header):
     data = [header] + data
     print(data)
     workbook = xlsxwriter.Workbook(filename)
