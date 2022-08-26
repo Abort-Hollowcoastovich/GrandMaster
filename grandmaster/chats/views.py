@@ -2,11 +2,12 @@ from rest_framework import generics
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 
+from authentication.models import User
 from chats.models import Chat
-from chats.serializers import ChatSerializer, MessageSerializer
+from chats.serializers import ChatSerializer, MessageSerializer, MemberSerializer
 
 
-class ChatListView(generics.ListAPIView):
+class ChatListView(generics.ListAPIView, generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ChatSerializer
 
@@ -35,3 +36,23 @@ class MessageListView(generics.ListAPIView):
         if chat not in user.chats.all():
             raise PermissionDenied
         return chat.messages.all().order_by('-created_at')
+
+
+class MembersListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MemberSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if User.Group.MODERATOR in user:
+            return User.objects.filter(contact_type__in=[
+                User.CONTACT.MODERATOR,
+                User.CONTACT.TRAINER,
+                User.CONTACT.SPORTSMAN,
+            ])
+        elif User.Group.TRAINER in user:
+            return User.objects.filter(contact_type__in=[
+                User.CONTACT.TRAINER,
+                User.CONTACT.SPORTSMAN,
+            ])
+        return User.objects.none()

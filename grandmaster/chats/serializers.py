@@ -2,11 +2,21 @@ from rest_framework import serializers
 
 from authentication.models import User
 from chats.models import Message, Chat
-from profiles.serializers import UserSerializer
+
+
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'full_name',
+            'photo',
+            'contact_type',
+        ]
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    author = UserSerializer()
+    author = MemberSerializer()
 
     class Meta:
         model = Message
@@ -18,7 +28,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    members = UserSerializer(many=True)
+    members = MemberSerializer(many=True)
     last_message = serializers.SerializerMethodField()
     unreaded_count = serializers.SerializerMethodField()
 
@@ -30,9 +40,9 @@ class ChatSerializer(serializers.ModelSerializer):
             "members",
             "cover",
             "dm",
-            "last_message"
+            "last_message",
+            "unreaded_count"
         ]
-        depth = 1
         read_only_fields = ["messages", "last_message"]
 
     def get_last_message(self, obj):
@@ -41,10 +51,9 @@ class ChatSerializer(serializers.ModelSerializer):
     def get_unreaded_count(self, obj):
         request = self.context['request']
         user = request.user
+        return self.get_user_unreaded_count(user, obj)
 
     def get_user_unreaded_count(self, user: User, chat: Chat):
-        count = 0
-        # chat.messages.filter(readers__)
-        # for message in chat.messages.all():
-        #     if user not in message.readers.all()
-        return count
+        readed_messages = len(user.readed_messages.filter(chat=chat))
+        all_messages = len(Message.objects.filter(chat=chat))
+        return all_messages - readed_messages
