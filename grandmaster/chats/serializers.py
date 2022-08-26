@@ -51,6 +51,8 @@ class ChatSerializer(serializers.ModelSerializer):
         chat = Chat.objects.create(
             name=validated_data["name"],
         )
+        members.append(self.context['request'].user.id)
+        print(members)
         chat.members.set(members)
         return chat
 
