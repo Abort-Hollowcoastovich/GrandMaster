@@ -1,5 +1,7 @@
 from datetime import datetime
 from urllib.parse import parse_qs
+
+import django
 import jwt
 
 from channels.db import database_sync_to_async
@@ -7,6 +9,8 @@ from channels.middleware import BaseMiddleware
 from django.contrib.auth.models import AnonymousUser
 from authentication.models import User
 from django.db import close_old_connections
+
+django.setup()
 
 from grandmaster import settings
 
