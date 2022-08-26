@@ -111,7 +111,7 @@ def make_report(request: Request):
     filename = get_file_name('event_report.xlsx')
     filepath = os.path.join(os.path.join(os.path.join(MEDIA_ROOT, 'events'), 'reports'), filename)
     save_to_file(filepath, data, headers)
-    return Response(data={'url': 'https://' + request.get_host() + MEDIA_URL + 'reports/' + filename}, status=200)
+    return Response(data={'url': 'https://' + request.get_host() + MEDIA_URL + 'events/reports/' + filename}, status=200)
 
 
 def get_file_name(base_name):
