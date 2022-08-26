@@ -28,7 +28,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    members = MemberSerializer(many=True)
+    members = MemberSerializer(many=True, read_only=True)
     last_message = serializers.SerializerMethodField()
     unreaded_count = serializers.SerializerMethodField()
 
@@ -44,6 +44,15 @@ class ChatSerializer(serializers.ModelSerializer):
             "unreaded_count"
         ]
         read_only_fields = ["messages", "last_message"]
+
+    def create(self, validated_data):
+        data = self.context['request'].data
+        members = data.get('members', [])
+        chat = Chat.objects.create(
+            name=validated_data["name"],
+        )
+        chat.members.set(members)
+        return chat
 
     def get_last_message(self, obj):
         return MessageSerializer(obj.messages.order_by('created_at').last()).data
