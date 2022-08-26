@@ -44,7 +44,6 @@ class TokenAuthMiddleware(BaseMiddleware):
             token = None
         user = await get_user(token)
         scope['user'] = user
-        print('ws_user:', user)
         return await super().__call__(scope, receive, send)
 
 

@@ -18,20 +18,21 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-urlpatterns = [
-                  path('admin/', admin.site.urls),
-                  path('auth/', include('authentication.urls')),
-                  path('news/', include('news.urls')),
-                  path('events/', include('event.urls')),
-                  path('users/', include('profiles.urls')),
-                  path('bitrix/', include('webhook.urls')),
-                  path('club_content/', include('club_content.urls')),
-                  path('sport_groups/', include('sport_groups.urls')),
-                  path('gyms/', include('gyms.urls')),
-                  path('qrcodes/', include('qrcodes.urls')),
-                  path('invoices/', include('invoice.urls')),
-                  path('videos/', include('videos.urls')),
-                  path('instructions/', include('instructions.urls')),
-                  path('schedule/', include('schedule.urls')),
-                  path('visit_log/', include('visit_log.urls')),
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns = [path('api/', include([
+    path('admin/', admin.site.urls),
+    path('auth/', include('authentication.urls')),
+    path('news/', include('news.urls')),
+    path('events/', include('event.urls')),
+    path('users/', include('profiles.urls')),
+    path('bitrix/', include('webhook.urls')),
+    path('club_content/', include('club_content.urls')),
+    path('sport_groups/', include('sport_groups.urls')),
+    path('gyms/', include('gyms.urls')),
+    path('qrcodes/', include('qrcodes.urls')),
+    path('invoices/', include('invoice.urls')),
+    path('videos/', include('videos.urls')),
+    path('instructions/', include('instructions.urls')),
+    path('schedule/', include('schedule.urls')),
+    path('visit_log/', include('visit_log.urls')),
+    path('chats/', include('chats.urls'))]))
+               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
