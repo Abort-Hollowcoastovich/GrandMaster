@@ -4,6 +4,7 @@ from .common import (
 )
 
 # Custom settings
+HOST = "https://app.grandmaster.center"
 
 GROUPS = {
     "Administrator": {

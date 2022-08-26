@@ -20,7 +20,7 @@ class ForPartnersView(APIView):
                 'details': 'Unauthorized'
             },
                 status=status.HTTP_401_UNAUTHORIZED)
-        data = f'grandmaster://app.grandmaster.center/?user={user.id}&type=partner'
+        data = f'https://app.grandmaster.center/?user={user.id}&type=partner'
         img = qrcode.make(data, image_factory=SvgImage).to_string()
         return Response({
             'status': True,
@@ -41,7 +41,7 @@ class ForEventsView(APIView):
                 'details': 'Unauthorized'
             },
                 status=status.HTTP_401_UNAUTHORIZED)
-        data = f'grandmaster://app.grandmaster.center/?user={user.id}&type=event'
+        data = f'https://app.grandmaster.center/?user={user.id}&type=event'
         img = qrcode.make(data, image_factory=SvgImage).to_string()
         return Response({
             'status': True,

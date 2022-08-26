@@ -1,17 +1,26 @@
+import base64
 import json
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.core.files.base import ContentFile
 
-from chats.models import Message
+from authentication.models import User
+from chats.models import Message, Chat
+from chats.serializers import MessageSerializer
+from grandmaster.settings import HOST
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.chat_id = self.scope['url_route']['kwargs']['chat_id']
         self.chat_group_name = 'chat_%s' % self.chat_id
-        print(self.scope['user'])
-        print(self.chat_id)
+        self.user: User = self.scope['user']
+        self.chat = await self.get_chat(self.chat_id)
+        if self.user.is_anonymous:
+            return
+        if self.chat is None:
+            return
 
         await self.channel_layer.group_add(
             self.chat_group_name,
@@ -27,20 +36,34 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def new_message(self, ):
-        Message.objects.create(
-
+    def new_message(self, text, photo_base64) -> dict:
+        message = Message.objects.create(
+            chat=self.chat,
+            text=text,
+            author=self.user,
         )
+        data = ContentFile(base64.b64decode(photo_base64))
+        file_name = "photo.png"
+        message.image.save(file_name, data, save=True)
+        return MessageSerializer(message).data
 
+    @database_sync_to_async
+    def get_chat(self, chat_id):
+        chat = Chat.objects.filter(id=chat_id)
+        if chat.exists():
+            return chat[0]
+        return None
 
     # Receive message from WebSocket
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-        print(message)
-        # Send message to room group
+        json_data = json.loads(text_data)
+        json_message = json_data['message']
+        text = json_message['text']
+        photo = json_message['photo']
+        message = await self.new_message(text, photo)
+        message['image'] = HOST + message['image']
         await self.channel_layer.group_send(
-            self.room_group_name,
+            self.chat_group_name,
             {
                 'type': 'chat_message',
                 'message': message
@@ -54,4 +77,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'message': message
-        }))
+        }, ensure_ascii=False))

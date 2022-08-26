@@ -105,9 +105,11 @@ def make_report(request: Request):
         raise NotFound('not found')
     event = event[0]
     # Validation end
+    data = []
     members = event.members.all()
-    data = [['1', '2']]  # TODO
-    headers = ['a', 'b']  # TODO
+    for member in members:
+        data.append([member.full_name, member.trainer.full_name])
+    headers = [['Спортсмен', 'Тренер']]
     filename = get_file_name('event_report.xlsx')
     filepath = os.path.join(os.path.join(os.path.join(MEDIA_ROOT, 'events'), 'reports'), filename)
     save_to_file(filepath, data, headers)
@@ -119,7 +121,7 @@ def get_file_name(base_name):
 
 
 def save_to_file(filename, data, header):
-    data = [header] + data
+    data = header + data
     workbook = xlsxwriter.Workbook(filename)
     worksheet = workbook.add_worksheet()
     for row, items in enumerate(data):
