@@ -1,6 +1,9 @@
 from rest_framework import generics
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from authentication.models import User
 from chats.models import Chat
@@ -56,3 +59,20 @@ class MembersListView(generics.ListAPIView):
                 User.CONTACT.SPORTSMAN,
             ])
         return User.objects.none()
+
+
+# TODO: check chat type
+#       check is user has this chat
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def leave_chat(request: Request):
+    params = request.query_params
+    chat_id = params.get('chat', None)
+    if chat_id is None:
+        raise NotFound
+    chat = Chat.objects.filter(id=chat_id)
+    if not chat.exists():
+        raise NotFound
+    chat = chat[0]
+    chat.members.remove(request.user)
+    return Response(status=200)
