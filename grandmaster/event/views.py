@@ -1,5 +1,10 @@
 # from rest_framework.pagination import PageNumberPagination
+import os
+import uuid
+
+import xlsxwriter
 from django.core.exceptions import BadRequest
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.request import Request
@@ -8,6 +13,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 
 from authentication.models import User
+from grandmaster.settings import MEDIA_URL, MEDIA_ROOT
 from .models import Event
 from .serializers import EventSerializer
 
@@ -84,3 +90,39 @@ class EventMembersView(APIView):
         event.members.add(*members_to_add)
         event.save()
         return Response(EventSerializer(event, context={'request': request}).data, status=200)
+
+
+@api_view(['GET'])
+# TODO: permissions
+@permission_classes([])
+def make_report(request: Request):
+    params = request.query_params
+    event_id = params.get('event', None)
+    if event_id is None:
+        raise NotFound('no id')
+    event = Event.objects.filter(id=event_id)
+    if not event.exists():
+        raise NotFound('not found')
+    event = event[0]
+    # Validation end
+    members = event.members.all()
+    data = [['1', '2']]  # TODO
+    headers = ['a', 'b']  # TODO
+    filename = get_file_name('event_report.xlsx')
+    filepath = os.path.join(os.path.join(os.path.join(MEDIA_ROOT, 'events'), 'reports'), filename)
+    save_to_file(filepath, data, headers)
+    return Response(data={'url': 'https://' + request.get_host() + MEDIA_URL + 'reports/' + filename}, status=200)
+
+
+def get_file_name(base_name):
+    return uuid.uuid4().hex + base_name
+
+
+def save_to_file(filename, data, header):
+    data = [header] + data
+    workbook = xlsxwriter.Workbook(filename)
+    worksheet = workbook.add_worksheet()
+    for row, items in enumerate(data):
+        for col, item in enumerate(items):
+            worksheet.write(row, col, item)
+    workbook.close()
