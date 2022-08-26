@@ -1,3 +1,4 @@
+from django.core.exceptions import BadRequest
 from rest_framework import generics
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.exceptions import NotFound, PermissionDenied
@@ -61,18 +62,47 @@ class MembersListView(generics.ListAPIView):
         return User.objects.none()
 
 
+def get_chat(params):
+    chat_id = params.get('chat', None)
+    if chat_id is None:
+        raise NotFound("Need chat id")
+    chat = Chat.objects.filter(id=chat_id)
+    if not chat.exists():
+        raise NotFound("Chat does not exist")
+    return chat[0]
+
+
+def get_member(params):
+    member_id = params.get('member', None)
+    if member_id is None:
+        raise NotFound("Need member id")
+    member = User.objects.filter(id=member_id)
+    if not member.exists():
+        raise NotFound("Member does not exist")
+    return member[0]
+
+
 # TODO: check chat type
-#       check is user has this chat
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def leave_chat(request: Request):
     params = request.query_params
-    chat_id = params.get('chat', None)
-    if chat_id is None:
-        raise NotFound
-    chat = Chat.objects.filter(id=chat_id)
-    if not chat.exists():
-        raise NotFound
-    chat = chat[0]
+    chat = get_chat(params)
+    if request.user not in chat.members.all():
+        raise BadRequest('You are not in this chat')
     chat.members.remove(request.user)
+    return Response(status=200)
+
+
+# TODO: check rights
+#       check chat type
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def remove_member(request: Request):
+    params = request.query_params
+    chat = get_chat(params)
+    member = get_member(params)
+    if member not in chat.members.all():
+        raise BadRequest('User is not in this chat')
+    chat.members.remove(member)
     return Response(status=200)
