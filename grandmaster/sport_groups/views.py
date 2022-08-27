@@ -32,13 +32,14 @@ class SportsmenList(generics.ListAPIView):
         user = self.request.user
         if user.is_authenticated:
             if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
-                return User.objects.all()
+                return User.objects.all().order_by('last_name', 'first_name', 'middle_name')
             elif User.Group.TRAINER in user:
-                return User.objects.filter(trainer=user)
+                return User.objects.filter(trainer=user).order_by('last_name', 'first_name', 'middle_name')
         return SportGroup.objects.none()
 
 
 class TrainersList(generics.ListAPIView):
-    queryset = User.objects.filter(contact_type=User.CONTACT.TRAINER).all()
+    queryset = User.objects.filter(contact_type=User.CONTACT.TRAINER).all().order_by(
+        'last_name', 'first_name', 'middle_name')
     serializer_class = TrainerSerializer
     permission_classes = [IsAuthenticated]
