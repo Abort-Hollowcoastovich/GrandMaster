@@ -17,13 +17,13 @@ def create_users():
     import requests
     import json
     def send_code(phone_number):
-        result = requests.post('http://127.0.0.1:8000/api/auth/send_code/', {
+        result = requests.post('https://app.grandmaster.center/api/auth/send_code/', {
             'phone_number': phone_number,
         })
         print(result.text[:100])
 
     def validate_code(phone_number):
-        result = requests.post('http://127.0.0.1:8000/api/auth/validate_code/', {
+        result = requests.post('https://app.grandmaster.center/api/auth/validate_code/', {
             'phone_number': phone_number,
             'code': '12345'
         })
