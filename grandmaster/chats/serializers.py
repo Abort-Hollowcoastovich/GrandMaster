@@ -48,7 +48,7 @@ class ChatSerializer(serializers.ModelSerializer):
             "name",
             "members",
             "cover",
-            "dm",
+            "type",
             "last_message",
             "unreaded_count"
         ]
@@ -61,12 +61,11 @@ class ChatSerializer(serializers.ModelSerializer):
             name=validated_data["name"],
         )
         members.append(self.context['request'].user.id)
-        print(members)
         chat.members.set(members)
         return chat
 
     def get_last_message(self, obj):
-        return MessageSerializer(obj.messages.order_by('created_at').last()).data
+        return MessageSerializer(obj.messages.order_by('created_at').last(), context=self.context).data
 
     def get_unreaded_count(self, obj):
         request = self.context['request']

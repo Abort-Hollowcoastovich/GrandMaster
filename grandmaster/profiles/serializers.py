@@ -57,13 +57,13 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             return ''
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
-        inter_chat = set(user.chats.filter(dm=True)).intersection(obj.chats.filter(dm=True))
+        inter_chat = set(user.chats.filter(type=Chat.Type.DM)).intersection(obj.chats.filter(type=Chat.Type.DM))
         if len(inter_chat) > 0:
             chat = inter_chat.pop()
         else:
             chat = Chat.objects.create(
                 name=name,
-                dm=True,
+                type=Chat.Type.DM,
             )
             chat.members.set(members)
         return chat.id

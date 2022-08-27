@@ -10,11 +10,16 @@ class ChatPathAndHash(PathAndHash):
 
 
 class Chat(models.Model):
+    class Type(models.TextChoices):
+        CUSTOM = 'custom'
+        AUTO = 'auto'
+        DM = 'dm'
+
     name = models.CharField(max_length=256)
     members = models.ManyToManyField(to=User, related_name='chats')
     cover = models.ImageField(upload_to=ChatPathAndHash('covers'), null=True, blank=True)
-    dm = models.BooleanField(default=False)
-    # TODO: add types, remove dm
+    type = models.CharField(choices=Type.choices, max_length=256, default='custom')
+    # owner = models.ForeignKey(to=User, related_name='own_chats')
 
     def __str__(self):
         return f"Room({self.name})"

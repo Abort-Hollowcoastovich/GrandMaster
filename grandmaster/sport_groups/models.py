@@ -37,6 +37,7 @@ def sport_group_save_handler(sender, **kwargs):
     if created:
         chat = Chat.objects.create(
             name=instance.name,
+            type=Chat.Type.AUTO,
         )
         members = list(instance.members.all())
         members.append(instance.trainer)
@@ -45,7 +46,6 @@ def sport_group_save_handler(sender, **kwargs):
         instance.save()
 
 
-# TODO: change chat to group members
 def members_changed(sender, **kwargs):
     instance = kwargs['instance']
     members = list(instance.members.all())
