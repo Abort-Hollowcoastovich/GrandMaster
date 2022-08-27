@@ -34,8 +34,7 @@ class SportsmenList(generics.ListAPIView):
             if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
                 return User.objects.all()
             elif User.Group.TRAINER in user:
-                # return User.objects.filter(trainer=self.request.user)
-                return User.objects.all()  # TODO: filter(trainer=self.request.user)
+                return User.objects.filter(trainer=user)
         return SportGroup.objects.none()
 
 

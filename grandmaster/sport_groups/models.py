@@ -1,4 +1,4 @@
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
 from django.db import models
@@ -30,6 +30,28 @@ class SportGroup(models.Model):
         ]
 
 
-@receiver(pre_save, sender=SportGroup)
+@receiver(post_save, sender=SportGroup)
 def sport_group_save_handler(sender, **kwargs):
-    pass
+    instance = kwargs['instance']
+    created = kwargs['created']
+    if created:
+        chat = Chat.objects.create(
+            name=instance.name,
+        )
+        members = list(instance.members.all())
+        members.append(instance.trainer)
+        chat.members.set(members)
+        instance.chat = chat
+        instance.save()
+
+
+# TODO: change chat to group members
+def members_changed(sender, **kwargs):
+    instance = kwargs['instance']
+    members = list(instance.members.all())
+    members.append(instance.trainer)
+    instance.chat.members.set(members)
+    instance.save()
+
+
+m2m_changed.connect(members_changed, sender=SportGroup.members.through)

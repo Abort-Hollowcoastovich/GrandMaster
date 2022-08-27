@@ -28,13 +28,17 @@ class SportGroupResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SportGroup
-        fields = '__all__'
+        exclude = [
+            'chat'
+        ]
 
 
 class SportGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = SportGroup
-        fields = '__all__'
+        exclude = [
+            'chat'
+        ]
         read_only_fields = ['id']
 
     def to_representation(self, instance):

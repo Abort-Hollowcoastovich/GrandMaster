@@ -138,6 +138,8 @@ def create_user(phone_number: str):
     user_type = user.contact_type
     if user_type == User.CONTACT.SPORTSMAN:
         user.trainer = find_trainer(user.trainer_name)
+        if user.trainer is not None:
+            user.trainer.add_group(User.Group.TRAINER)
         user.save()
         user.add_group(User.Group.STUDENT)
         if user.father_phone_number:
@@ -157,6 +159,7 @@ def create_user(phone_number: str):
                 )
                 father.add_group(User.Group.PARENT)
                 user.parents.add(father)
+                user.save()
             father_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.father_phone_number)
         if user.mother_phone_number:
             mother = User.objects.filter(phone_number=user.mother_phone_number)
@@ -175,6 +178,7 @@ def create_user(phone_number: str):
                 )
                 mother.add_group(User.Group.PARENT)
                 user.parents.add(mother)
+                user.save()
             mother_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.mother_phone_number)
     elif user_type == User.CONTACT.TRAINER:
         user.add_group(User.Group.TRAINER)

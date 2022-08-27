@@ -14,6 +14,7 @@ class Chat(models.Model):
     members = models.ManyToManyField(to=User, related_name='chats')
     cover = models.ImageField(upload_to=ChatPathAndHash('covers'), null=True, blank=True)
     dm = models.BooleanField(default=False)
+    # TODO: add types, remove dm
 
     def __str__(self):
         return f"Room({self.name})"

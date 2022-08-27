@@ -20,6 +20,13 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
         return user.chats.all()
 
 
+# todo: change perms
+class ChatDetailView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChatSerializer
+    queryset = Chat.objects.all()
+
+
 class MessageListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageSerializer

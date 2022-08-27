@@ -1,6 +1,9 @@
 from rest_framework import serializers
+from rest_framework.request import Request
 from rest_framework.reverse import reverse
 from django.contrib.auth import get_user_model
+
+from chats.models import Chat
 
 User = get_user_model()
 
@@ -38,7 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-
 class UserDetailsSerializer(serializers.ModelSerializer):
     documents = serializers.HyperlinkedIdentityField(
         view_name='documents-detail'
@@ -46,6 +48,27 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     admitted = serializers.BooleanField(source='is_admitted')
     parents = UserSerializer(many=True)
     children = UserSerializer(many=True)
+    dm = serializers.SerializerMethodField()
+
+    def get_dm(self, obj):
+        # TODO: check exists
+        request: Request = self.context['request']
+        user = request.user
+        if user.is_anonymous:
+            return ''
+        members = [user.id, obj.id]
+        name = f'dm_{user.id}{obj.id}'
+        inter_chat = set(user.chats.all()).intersection(obj.chats.all())
+        print(inter_chat)
+        if len(inter_chat) > 0:
+            chat = inter_chat.pop()
+        else:
+            chat = Chat.objects.create(
+                name=name,
+                dm=True,
+            )
+            chat.members.set(members)
+        return reverse('chat-detail', args=[chat.id], request=request)
 
     class Meta:
         model = User
@@ -86,6 +109,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'mother_email',
             'children',
             'parents',
+            'dm',
         ]
 
 
