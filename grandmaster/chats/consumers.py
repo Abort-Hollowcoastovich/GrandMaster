@@ -75,7 +75,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text = json_message['text']
         photo = json_message['photo']
         message = await self.new_message(text, photo)
-        message['image'] = HOST + message['image']
+        if message['image'] is not None:
+            message['image'] = HOST + message['image']
         await self.channel_layer.group_send(
             self.chat_group_name,
             {
