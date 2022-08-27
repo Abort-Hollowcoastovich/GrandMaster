@@ -58,6 +58,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'middle_name',
+            'full_name',
             'birth_date',
             'contact_type',
             'phone_number',

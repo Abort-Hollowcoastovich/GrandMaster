@@ -7,7 +7,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import PhoneOTP, User
-from .utils import send_sms_code, generate_code, is_exists_on_bitrix, get_user_from_bitrix
+from .utils import send_sms_code, generate_code, is_exists_on_bitrix, get_user_from_bitrix_by_phone, \
+    get_trainer_from_bitrix
 from grandmaster.settings.project import (
     MAX_SEND_TIMES,
     SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK,
@@ -124,10 +125,20 @@ class ValidateOTP(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
+def find_trainer(trainer_name: str):
+    trainer = User.objects.filter(trainer_name=trainer_name, contact_type=User.CONTACT.TRAINER)
+    if trainer.exists():
+        return trainer[0]
+    trainer = get_trainer_from_bitrix(trainer_name)
+    return trainer
+
+
 def create_user(phone_number: str):
-    user = get_user_from_bitrix(phone_number)
+    user = get_user_from_bitrix_by_phone(phone_number)
     user_type = user.contact_type
     if user_type == User.CONTACT.SPORTSMAN:
+        user.trainer = find_trainer(user.trainer_name)
+        user.save()
         user.add_group(User.Group.STUDENT)
         if user.father_phone_number:
             father = User.objects.filter(phone_number=user.father_phone_number)

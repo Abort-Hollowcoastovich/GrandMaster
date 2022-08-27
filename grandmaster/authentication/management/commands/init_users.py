@@ -17,17 +17,17 @@ def create_users():
     import requests
     import json
     def send_code(phone_number):
-        result = requests.post('https://app.grandmaster.center/auth/send_code/', {
+        result = requests.post('http://127.0.0.1:8000/api/auth/send_code/', {
             'phone_number': phone_number,
         })
-        print(result.text)
+        print(result.text[:100])
 
     def validate_code(phone_number):
-        result = requests.post('https://app.grandmaster.center/auth/validate_code/', {
+        result = requests.post('http://127.0.0.1:8000/api/auth/validate_code/', {
             'phone_number': phone_number,
             'code': '12345'
         })
-        print(result.text)
+        print(result.text[:100])
 
     with open('result.json', 'r', encoding='utf-8') as file:
         result = json.load(file)

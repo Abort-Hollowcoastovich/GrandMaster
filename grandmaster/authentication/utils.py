@@ -49,7 +49,7 @@ def find_field_by_id(field_name, id):
             return item['VALUE']
 
 
-def get_user_from_bitrix(phone_number: str):
+def get_info_by_number(phone_number: str):
     b = Bitrix24('gm61.bitrix24.ru', user_id=2261)
     method = 'crm.contact.list'
     params = {
@@ -62,8 +62,10 @@ def get_user_from_bitrix(phone_number: str):
     if not result:
         return
     else:
-        result = result[0]
+        return result[0]
 
+
+def get_user_from_bitrix(result):
     load = lambda x: None if x is None or not x else get_photo(domain + x['downloadUrl'])
     make_date = lambda x: datetime.fromisoformat(x).replace(tzinfo=None) if x is not None and x else None
 
@@ -161,3 +163,28 @@ def get_user_from_bitrix(phone_number: str):
     )
     [Document.objects.create(user=user, image=load(el)) for el in result['UF_CRM_CONTACT_1656822613397']]
     return user
+
+
+def get_user_from_bitrix_by_phone(phone_number: str):
+    result = get_info_by_number(phone_number)
+    return get_user_from_bitrix(result)
+
+
+def get_trainer_from_bitrix(trainer_name: str):
+    last_name, name, second_name = trainer_name.split()
+    b = Bitrix24('gm61.bitrix24.ru', user_id=2261)
+    method = 'crm.contact.list'
+    params = {
+        'select': ['*', 'UF_*', 'PHONE', 'EMAIL', 'IM'],
+        'filter': {'TYPE_ID': 'PARTNER', 'NAME': name, 'SECOND_NAME': second_name, 'LAST_NAME': last_name},
+    }
+    result = b.call_webhook(method, '6ot3rs39vklb84zs', params)
+    print('trainer_:', result)  # may be QUERY_LIMIT_EXCEEDED error
+    result = result['result']
+    if not result:
+        print('error to find: ', trainer_name)
+        return
+    else:
+        result = result[0]
+    print('trainer_result', result)
+    return get_user_from_bitrix(result)
