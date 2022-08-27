@@ -48,7 +48,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         file_name = "photo.png"
         message.image.save(file_name, data, save=True)
         message_json = {
-            "id": message['id'],
+            "id": message.id,
             "author": {
                 "id": message['author'].id,
                 "full_name": message['author'].full_name,
