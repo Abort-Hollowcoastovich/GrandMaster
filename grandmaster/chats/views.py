@@ -60,12 +60,12 @@ class MembersListView(generics.ListAPIView):
                 User.CONTACT.MODERATOR,
                 User.CONTACT.TRAINER,
                 User.CONTACT.SPORTSMAN,
-            ])
+            ]).order_by('full_name')
         elif User.Group.TRAINER in user:
             return User.objects.filter(contact_type__in=[
                 User.CONTACT.TRAINER,
                 User.CONTACT.SPORTSMAN,
-            ])
+            ]).order_by('full_name')
         return User.objects.none()
 
 
