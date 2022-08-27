@@ -38,6 +38,7 @@ def sport_group_save_handler(sender, **kwargs):
         chat = Chat.objects.create(
             name=instance.name,
             type=Chat.Type.AUTO,
+            owner=instance.trainer
         )
         members = list(instance.members.all())
         members.append(instance.trainer)

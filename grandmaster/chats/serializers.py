@@ -40,12 +40,14 @@ class ChatSerializer(serializers.ModelSerializer):
     members = MemberSerializer(many=True, read_only=True)
     last_message = serializers.SerializerMethodField()
     unreaded_count = serializers.SerializerMethodField()
+    owner = MemberSerializer(read_only=True)
 
     class Meta:
         model = Chat
         fields = [
             "id",
             "name",
+            "owner",
             "members",
             "cover",
             "type",
@@ -55,10 +57,13 @@ class ChatSerializer(serializers.ModelSerializer):
         read_only_fields = ["messages", "last_message"]
 
     def create(self, validated_data):
-        data = self.context['request'].data
+        request = self.context['request']
+        data = request.data
+        user = request.user
         members = data.get('members', [])
         chat = Chat.objects.create(
             name=validated_data["name"],
+            owner=user
         )
         members.append(self.context['request'].user.id)
         chat.members.set(members)

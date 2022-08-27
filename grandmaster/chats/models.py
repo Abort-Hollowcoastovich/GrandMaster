@@ -16,10 +16,10 @@ class Chat(models.Model):
         DM = 'dm'
 
     name = models.CharField(max_length=256)
-    members = models.ManyToManyField(to=User, related_name='chats')
+    members = models.ManyToManyField(to=User, related_name='chats', blank=True)
     cover = models.ImageField(upload_to=ChatPathAndHash('covers'), null=True, blank=True)
     type = models.CharField(choices=Type.choices, max_length=256, default='custom')
-    # owner = models.ForeignKey(to=User, related_name='own_chats')
+    owner = models.ForeignKey(to=User, related_name='own_chats', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"Room({self.name})"

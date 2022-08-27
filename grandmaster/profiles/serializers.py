@@ -64,6 +64,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             chat = Chat.objects.create(
                 name=name,
                 type=Chat.Type.DM,
+                owner=None
             )
             chat.members.set(members)
         return chat.id
