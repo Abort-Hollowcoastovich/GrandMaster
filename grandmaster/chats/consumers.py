@@ -56,7 +56,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "me": message.author == self.user,
             },
             "text": message.text,
-            "image": message.image.url if message.image else message.image,
+            "image": message.image.url if message.image else None,
             "created_at": str(message.created_at),
         }
         return message_json
