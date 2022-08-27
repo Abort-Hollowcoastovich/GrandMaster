@@ -47,7 +47,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = ContentFile(base64.b64decode(photo_base64))
         file_name = "photo.png"
         message.image.save(file_name, data, save=True)
-        return MessageSerializer(message).data
+        message_json = {
+            "id": message['id'],
+            "author": {
+                "id": message['author'].id,
+                "full_name": message['author'].full_name,
+                "me": message['author'] == self.user,
+            },
+            "text": message['text'],
+            "image": message['image'],
+            "created_at": message['created_at'],
+        }
+        return message_json
 
     @database_sync_to_async
     def get_chat(self, chat_id):

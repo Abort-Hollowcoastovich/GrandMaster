@@ -34,7 +34,6 @@ class MessageSerializer(serializers.ModelSerializer):
             'chat',
             'readers'
         ]
-        depth = 1
 
 
 class ChatSerializer(serializers.ModelSerializer):
