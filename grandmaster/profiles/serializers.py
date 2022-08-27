@@ -51,7 +51,6 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     dm = serializers.SerializerMethodField()
 
     def get_dm(self, obj):
-        # TODO: check exists
         request: Request = self.context['request']
         user = request.user
         if user.is_anonymous:
@@ -59,7 +58,6 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
         inter_chat = set(user.chats.all()).intersection(obj.chats.all())
-        print(inter_chat)
         if len(inter_chat) > 0:
             chat = inter_chat.pop()
         else:
@@ -68,7 +66,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
                 dm=True,
             )
             chat.members.set(members)
-        return reverse('chat-detail', args=[chat.id], request=request)
+        return chat.id
 
     class Meta:
         model = User

@@ -18,8 +18,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.user: User = self.scope['user']
         self.chat = await self.get_chat(self.chat_id)
         if self.user.is_anonymous:
+            print('anonim')
             return
         if self.chat is None:
+            print('no chat')
             return
 
         await self.channel_layer.group_add(
