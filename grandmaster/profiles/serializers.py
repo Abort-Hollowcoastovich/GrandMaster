@@ -57,7 +57,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             return ''
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
-        inter_chat = set(user.chats.all()).intersection(obj.chats.all())
+        inter_chat = set(user.chats.filter(dm=True)).intersection(obj.chats.filter(dm=True))
         if len(inter_chat) > 0:
             chat = inter_chat.pop()
         else:
