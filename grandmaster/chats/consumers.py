@@ -50,13 +50,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_json = {
             "id": message.id,
             "author": {
-                "id": message['author'].id,
-                "full_name": message['author'].full_name,
-                "me": message['author'] == self.user,
+                "id": message.author.id,
+                "full_name": message.author.full_name,
+                "me": message.author == self.user,
             },
-            "text": message['text'],
-            "image": message['image'],
-            "created_at": message['created_at'],
+            "text": message.text,
+            "image": message.image,
+            "created_at": message.created_at,
         }
         return message_json
 
