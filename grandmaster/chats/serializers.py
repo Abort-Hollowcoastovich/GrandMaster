@@ -5,6 +5,8 @@ from chats.models import Message, Chat
 
 
 class MemberSerializer(serializers.ModelSerializer):
+    me = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
@@ -12,7 +14,15 @@ class MemberSerializer(serializers.ModelSerializer):
             'full_name',
             'photo',
             'contact_type',
+            'me',
         ]
+
+    def get_me(self, obj):
+        request = self.context['request']
+        user = request.user
+        if user.id == obj.id:
+            return True
+        return False
 
 
 class MessageSerializer(serializers.ModelSerializer):
