@@ -3,7 +3,7 @@ venv
 __pycache__
 db.sqlite3
 media
-migrations/*
+migrations
 .env
 tokens.json
 test
