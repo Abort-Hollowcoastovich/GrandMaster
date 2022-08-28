@@ -9,6 +9,7 @@ class Event(models.Model):
     address = models.CharField(max_length=200)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    deadline_date = models.DateTimeField(null=True)
     cover = models.ImageField(upload_to=PathAndHash('events/covers'), null=True)
     open = models.BooleanField(default=True)
     hidden = models.BooleanField(default=False)
