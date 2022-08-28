@@ -98,10 +98,10 @@ class ChatSerializer(serializers.ModelSerializer):
             if member.contact_type == User.CONTACT.MODERATOR and user.contact_type == User.CONTACT.MODERATOR:
                 return 'moderators'
         elif obj.type == Chat.Type.AUTO:
-            return None
+            return 'none'
         elif obj.type == Chat.Type.CUSTOM:
-            return None
-        return None
+            return 'none'
+        return 'none'
 
     def get_display_name(self, obj: Chat):
         try:
