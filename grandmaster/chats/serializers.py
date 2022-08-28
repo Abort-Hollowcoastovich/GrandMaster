@@ -63,6 +63,7 @@ class ChatSerializer(serializers.ModelSerializer):
             "last_message",
             "unreaded_count",
             "folder",
+            "name"
         ]
         read_only_fields = ["messages", "last_message"]
 
