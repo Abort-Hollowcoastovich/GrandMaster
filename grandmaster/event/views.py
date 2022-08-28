@@ -43,6 +43,7 @@ class EventMembersView(APIView):
         if user.is_anonymous:
             members = User.objects.none()
         elif User.Group.TRAINER in user:
+            # print(user.my_groups) TODO: ONLY GROUPS MEMBERS
             members = user.students.all()
         elif User.Group.PARENT in user:
             members = user.children.all()

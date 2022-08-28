@@ -47,19 +47,22 @@ class ChatSerializer(serializers.ModelSerializer):
     members = MemberSerializer(many=True, read_only=True)
     last_message = serializers.SerializerMethodField()
     unreaded_count = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField()
+    folder = serializers.SerializerMethodField()
     owner = MemberSerializer(read_only=True)
 
     class Meta:
         model = Chat
         fields = [
             "id",
-            "name",
+            "display_name",
             "owner",
             "members",
             "cover",
             "type",
             "last_message",
-            "unreaded_count"
+            "unreaded_count",
+            "folder",
         ]
         read_only_fields = ["messages", "last_message"]
 
@@ -75,6 +78,53 @@ class ChatSerializer(serializers.ModelSerializer):
         members.append(self.context['request'].user.id)
         chat.members.set(members)
         return chat
+
+    def get_folder(self, obj: Chat):
+        request = self.context['request']
+        user = request.user
+        if obj.type == Chat.Type.DM:
+            member = None
+            for _member in obj.members.all():
+                if _member != user:
+                    member = _member
+            if user.contact_type == User.CONTACT.TRAINER:
+                if member.contact_type == User.CONTACT.SPORTSMAN:
+                    return 'students'
+            if user.contact_type == User.CONTACT.MODERATOR or user.contact_type == User.CONTACT.TRAINER:
+                if member.contact_type == User.CONTACT.TRAINER:
+                    return 'trainers'
+            if hasattr(member, 'special'):
+                return 'specialists'
+            if member.contact_type == User.CONTACT.MODERATOR and user.contact_type == User.CONTACT.MODERATOR:
+                return 'moderators'
+        elif obj.type == Chat.Type.AUTO:
+            return None
+        elif obj.type == Chat.Type.CUSTOM:
+            return None
+        return None
+
+    def get_display_name(self, obj: Chat):
+        try:
+            request = self.context['request']
+            user = request.user
+        except Exception:
+            return "Ошибка сервера"
+        if obj.type == Chat.Type.DM:
+            members = obj.members.all()
+            if len(obj.members.all()) == 2:
+                for member in members:
+                    if member != user:
+                        if hasattr(member, 'special'):
+                            return member.special.name
+                        return member.full_name
+                return obj.name
+            else:
+                print('Chat error')
+        elif obj.type == Chat.Type.AUTO:
+            return obj.name
+        elif obj.type == Chat.Type.CUSTOM:
+            return obj.name
+        print(obj.type, 11)
 
     def get_last_message(self, obj):
         return MessageSerializer(obj.messages.order_by('created_at').last(), context=self.context).data

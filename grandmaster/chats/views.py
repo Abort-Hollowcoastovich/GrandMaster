@@ -26,6 +26,12 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
         specialists = [User.objects.get(id=id['user']) for id in specialists]
         for specialist in specialists:
             self.create_dm(specialist)
+        trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER).exclude(pk=self.request.user.pk)
+        for trainer in trainers:
+            self.create_dm(trainer)
+        students = self.request.user.students.all()
+        for student in students:
+            self.create_dm(student)
 
     def create_dm(self, obj):
         user = self.request.user
@@ -83,13 +89,14 @@ class MembersListView(generics.ListAPIView):
             return User.objects.filter(contact_type__in=[
                 User.CONTACT.MODERATOR,
                 User.CONTACT.TRAINER,
-                User.CONTACT.SPORTSMAN,
+                User.CONTACT.SPORTSMAN
             ]).order_by('last_name', 'first_name', 'middle_name')
         elif User.Group.TRAINER in user:
-            return User.objects.filter(contact_type__in=[
+            trainers = list(User.objects.filter(contact_type__in=[
                 User.CONTACT.TRAINER,
-                User.CONTACT.SPORTSMAN,
-            ]).order_by('last_name', 'first_name', 'middle_name')
+            ]))
+            my_students = list(user.students.all())
+            return sorted(my_students + trainers, key=lambda x: x.last_name)
         return User.objects.none()
 
 

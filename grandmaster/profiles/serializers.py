@@ -54,8 +54,10 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     def get_dm(self, obj):
         request: Request = self.context['request']
         user = request.user
+        if obj == user:
+            return None
         if user.is_anonymous:
-            return ''
+            return None
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
         inter_chat = set(user.chats.filter(type=Chat.Type.DM)).intersection(obj.chats.filter(type=Chat.Type.DM))
