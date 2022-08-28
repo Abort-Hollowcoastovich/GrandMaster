@@ -6,11 +6,13 @@ from chats.models import Message, Chat
 
 class MemberSerializer(serializers.ModelSerializer):
     me = serializers.SerializerMethodField()
+    special = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id',
+            'special',
             'full_name',
             'photo',
             'contact_type',
@@ -23,6 +25,11 @@ class MemberSerializer(serializers.ModelSerializer):
         if user.id == obj.id:
             return True
         return False
+
+    def get_special(self, obj):
+        if hasattr(obj, 'special'):
+            return obj.special.name
+        return None
 
 
 class MessageSerializer(serializers.ModelSerializer):

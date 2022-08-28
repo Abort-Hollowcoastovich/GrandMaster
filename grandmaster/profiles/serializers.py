@@ -45,6 +45,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     documents = serializers.HyperlinkedIdentityField(
         view_name='documents-detail'
     )
+    special = serializers.SerializerMethodField()
     admitted = serializers.BooleanField(source='is_admitted')
     parents = UserSerializer(many=True)
     children = UserSerializer(many=True)
@@ -69,10 +70,16 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             chat.members.set(members)
         return chat.id
 
+    def get_special(self, obj):
+        if hasattr(obj, 'special'):
+            return obj.special.name
+        return None
+
     class Meta:
         model = User
         fields = [
             'id',
+            'special',
             'documents',
             'admitted',
             'photo',

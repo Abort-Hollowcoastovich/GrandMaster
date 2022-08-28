@@ -48,10 +48,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             data = ContentFile(base64.b64decode(photo_base64))
             file_name = "photo.png"
             message.image.save(file_name, data, save=True)
+        special = None
+        if hasattr(message.author, 'special'):
+            special = message.author.special.name
         message_json = {
             "id": message.id,
             "author": {
                 "id": message.author.id,
+                "special": special,
                 "full_name": message.author.full_name,
                 "me": message.author == self.user,
             },

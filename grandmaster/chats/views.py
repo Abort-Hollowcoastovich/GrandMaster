@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from authentication.models import User
 from chats.models import Chat
 from chats.serializers import ChatSerializer, MessageSerializer, MemberSerializer
+from profiles.models import SpecialContact
 
 
 class ChatListView(generics.ListAPIView, generics.CreateAPIView):
@@ -16,8 +17,28 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
     serializer_class = ChatSerializer
 
     def get_queryset(self):
+        self.check_chats_list()
         user = self.request.user
         return user.chats.all()
+
+    def check_chats_list(self):
+        specialists = SpecialContact.objects.values('user')
+        specialists = [User.objects.get(id=id['user']) for id in specialists]
+        for specialist in specialists:
+            self.create_dm(specialist)
+
+    def create_dm(self, obj):
+        user = self.request.user
+        members = [user.id, obj.id]
+        name = f'dm_{user.id}{obj.id}'
+        inter_chat = set(user.chats.filter(type=Chat.Type.DM)).intersection(obj.chats.filter(type=Chat.Type.DM))
+        if len(inter_chat) == 0:
+            chat = Chat.objects.create(
+                name=name,
+                type=Chat.Type.DM,
+                owner=None
+            )
+            chat.members.set(members)
 
 
 # todo: change perms
