@@ -49,6 +49,7 @@ class ChatSerializer(serializers.ModelSerializer):
     unreaded_count = serializers.SerializerMethodField()
     display_name = serializers.SerializerMethodField()
     folder = serializers.SerializerMethodField()
+    empty = serializers.SerializerMethodField()
     owner = MemberSerializer(read_only=True)
 
     class Meta:
@@ -63,7 +64,8 @@ class ChatSerializer(serializers.ModelSerializer):
             "last_message",
             "unreaded_count",
             "folder",
-            "name"
+            "name",
+            "empty",
         ]
         read_only_fields = ["messages", "last_message"]
 
@@ -104,6 +106,14 @@ class ChatSerializer(serializers.ModelSerializer):
             return 'none'
         return 'none'
 
+    def get_empty(self, obj):
+        folder = self.get_folder(obj)
+        is_empty = len(obj.messages.all()) == 0
+        print(is_empty)
+        if folder == 'none' and is_empty:
+            return True
+        return False
+
     def get_display_name(self, obj: Chat):
         try:
             request = self.context['request']
@@ -125,7 +135,7 @@ class ChatSerializer(serializers.ModelSerializer):
             return obj.name
         elif obj.type == Chat.Type.CUSTOM:
             return obj.name
-        print(obj.type, 11)
+        return "Без имени"
 
     def get_last_message(self, obj):
         return MessageSerializer(obj.messages.order_by('created_at').last(), context=self.context).data
