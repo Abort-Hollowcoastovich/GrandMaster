@@ -89,7 +89,6 @@ class ChatSerializer(serializers.ModelSerializer):
             member = self.get_another_chat_member(obj, user)
             if member is None:
                 return 'none'
-            print(member, obj, obj.members.all())
             if user.contact_type == User.CONTACT.TRAINER:
                 if member.trainer == user:
                     return 'students'
