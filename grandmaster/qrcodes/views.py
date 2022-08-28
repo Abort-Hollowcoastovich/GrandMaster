@@ -1,6 +1,8 @@
 import base64
 import qrcode
 from qrcode.image.svg import SvgImage
+from rest_framework.generics import get_object_or_404
+from rest_framework.request import Request
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,18 +10,19 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.permissions import IsAuthenticated
 
+from authentication.models import User
+
 
 class ForPartnersView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
+    # TODO: check if parent
+    def get(self, request: Request, *args, **kwargs):
         user = request.user
-        if user.is_anonymous:
-            return Response({
-                'status': False,
-                'details': 'Unauthorized'
-            },
-                status=status.HTTP_401_UNAUTHORIZED)
+        params = request.query_params
+        child_id = params.get('id', None)
+        if child_id is not None:
+            user = get_object_or_404(User, id=child_id)
         data = f'https://app.grandmaster.center/?user={user.id}&type=partner'
         img = qrcode.make(data, image_factory=SvgImage).to_string()
         return Response({
@@ -33,14 +36,13 @@ class ForPartnersView(APIView):
 class ForEventsView(APIView):
     permission_classes = [IsAuthenticated]
 
+    # TODO: check if parent
     def get(self, request, *args, **kwargs):
         user = request.user
-        if user.is_anonymous:
-            return Response({
-                'status': False,
-                'details': 'Unauthorized'
-            },
-                status=status.HTTP_401_UNAUTHORIZED)
+        params = request.query_params
+        child_id = params.get('id', None)
+        if child_id is not None:
+            user = get_object_or_404(User, id=child_id)
         data = f'https://app.grandmaster.center/?user={user.id}&type=event'
         img = qrcode.make(data, image_factory=SvgImage).to_string()
         return Response({
