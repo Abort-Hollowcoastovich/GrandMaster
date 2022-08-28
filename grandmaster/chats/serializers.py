@@ -109,7 +109,6 @@ class ChatSerializer(serializers.ModelSerializer):
     def get_empty(self, obj):
         folder = self.get_folder(obj)
         is_empty = len(obj.messages.all()) == 0
-        print(is_empty)
         if folder == 'none' and is_empty:
             return True
         return False
