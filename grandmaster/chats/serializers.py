@@ -137,7 +137,15 @@ class ChatSerializer(serializers.ModelSerializer):
         return "Без имени"
 
     def get_last_message(self, obj):
-        return MessageSerializer(obj.messages.order_by('created_at').last(), context=self.context).data
+        message = obj.messages.order_by('created_at').last()
+        if message:
+            json_message = MessageSerializer(message, context=self.context).data
+            image = json_message['image']
+            text = json_message['text']
+            if len(text.strip()) == 0 and len(image.strip()) > 0:
+                json_message['text'] = "Изображение"
+            return json_message
+        return MessageSerializer(message, context=self.context).data
 
     def get_unreaded_count(self, obj):
         request = self.context['request']
