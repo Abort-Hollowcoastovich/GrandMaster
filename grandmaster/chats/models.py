@@ -32,6 +32,7 @@ class Message(models.Model):
     image = models.ImageField(upload_to=ChatPathAndHash('images'), blank=True, null=True)
     created_at = models.DateTimeField(auto_now=True)
     readers = models.ManyToManyField(to=User, blank=True, related_name='readed_messages')
+    prefix = models.CharField(max_length=256, null=True, blank=True)
 
     def __str__(self):
         return f'Message({self.chat} {self.author})'
