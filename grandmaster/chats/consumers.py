@@ -78,6 +78,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         json_message = json_data['message']
         text = json_message['text']
         photo = json_message['photo']
+        id_ = json_message['id']
         message = await self.new_message(text, photo)
         if message['image'] is not None:
             message['image'] = HOST + message['image']

@@ -13,6 +13,7 @@ User = get_user_model()
 class UserDetails(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailsSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class SelfDetails(generics.RetrieveAPIView):
