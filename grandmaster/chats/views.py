@@ -106,11 +106,11 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
             moderators = User.objects.filter(contact_type=User.CONTACT.MODERATOR)
             trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER).exclude(pk=self.request.user.pk)
             specialists = [User.objects.get(id=id_['user']) for id_ in SpecialContact.objects.values('user')]
-            students = User.objects.filter(contact_type=User.CONTACT.SPORTSMAN)
+            # students = User.objects.filter(contact_type=User.CONTACT.SPORTSMAN) TODO:
             self.create_dms(moderators)
             self.create_dms(trainers)
             self.create_dms(specialists)
-            self.create_dms(students)
+            # self.create_dms(students)
         elif user.contact_type == User.CONTACT.SPORTSMAN:
             specialists = [User.objects.get(id=id_['user']) for id_ in SpecialContact.objects.values('user')]
             if user.trainer is not None:
