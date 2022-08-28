@@ -85,10 +85,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
+    @database_sync_to_async
+    def add_message_to_readed(self, id):
+        self.user.readed_messages.add(id)
+        self.user.save()
+
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
-        self.user.readed_messages.add(message["id"])
+        await self.add_message_to_readed(message["id"])
         # print(message, self.user)
         # Send message to WebSocket
         await self.send(text_data=json.dumps({

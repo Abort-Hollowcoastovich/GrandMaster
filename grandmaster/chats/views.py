@@ -48,6 +48,7 @@ class MessageListView(generics.ListAPIView):
             raise PermissionDenied
         messages = chat.messages.all().order_by('-created_at')
         self.request.user.readed_messages.add(*messages)
+        self.request.user.save()
         return messages
 
 
