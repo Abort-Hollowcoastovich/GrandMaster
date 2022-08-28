@@ -8,5 +8,12 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schedule
-        fields = '__all__'
+        fields = [
+            'id',
+            'weekday',
+            'start_time',
+            'finish_time',
+            'gym',
+            'sport_group',
+        ]
         read_only_fields = ['id']
