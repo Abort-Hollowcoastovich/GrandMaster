@@ -1,14 +1,14 @@
 import base64
 import json
 
+from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.files.base import ContentFile
 
-from authentication.models import User
-from chats.models import Message, Chat
-from chats.serializers import MessageSerializer
 from grandmaster.settings import HOST
+from authentication.models import User
+from chats.models import Message, Chat, Room
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -88,7 +88,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
-        print(message)
+        self.user.readed_messages.add(message["id"])
+        # print(message, self.user)
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'message': message

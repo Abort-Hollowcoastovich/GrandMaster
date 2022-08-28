@@ -9,6 +9,8 @@ WSGI_APPLICATION = 'grandmaster.wsgi.application'
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
 INSTALLED_APPS = [
     'channels',
     'rest_framework',

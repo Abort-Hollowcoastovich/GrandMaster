@@ -46,7 +46,9 @@ class MessageListView(generics.ListAPIView):
         user = self.request.user
         if chat not in user.chats.all():
             raise PermissionDenied
-        return chat.messages.all().order_by('-created_at')
+        messages = chat.messages.all().order_by('-created_at')
+        self.request.user.readed_messages.add(*messages)
+        return messages
 
 
 class MembersListView(generics.ListAPIView):
