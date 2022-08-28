@@ -42,7 +42,6 @@ class NewsSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         request = self.context.get('view').request
         data = request.data
-        data._mutable = True
         print(data)
         title = data.pop('title', None)
         description = data.pop('description', None)
