@@ -1,7 +1,8 @@
 from django.core.exceptions import BadRequest
-from rest_framework import generics
+from rest_framework import generics, filters
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -17,28 +18,65 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
     serializer_class = ChatSerializer
 
     def get_queryset(self):
-        self.check_chats_list()
         user = self.request.user
+        if user.contact_type == User.CONTACT.PARENT:
+            user = self.get_child()
+        self.check_chats_list(user)
         return user.chats.all()
 
-    def check_chats_list(self):
-        specialists = SpecialContact.objects.values('user')
-        specialists = [User.objects.get(id=id['user']) for id in specialists]
-        for specialist in specialists:
-            self.create_dm(specialist)
-        trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER).exclude(pk=self.request.user.pk)
-        for trainer in trainers:
-            self.create_dm(trainer)
-        students = self.request.user.students.all()
-        for student in students:
-            self.create_dm(student)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        params = self.request.query_params
+        child_id = params.get('id', None)
+        context['child_id'] = child_id
+        print(context)
+        return context
+
+    def get_child(self):
+        params = self.request.query_params
+        user = self.request.user
+        child_id = params.get('id', None)
+        if child_id is None:
+            raise NotFound('Parents users need child id')
+        child = get_object_or_404(User, id=child_id)
+        if child not in user.children.all():
+            raise BadRequest('You are not parent of this user')
+        return child
+
+    def check_chats_list(self, user):
+        if user.contact_type == User.CONTACT.TRAINER:
+            students = user.students.all()
+            trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER).exclude(pk=self.request.user.pk)
+            specialists = [User.objects.get(id=id_['user']) for id_ in SpecialContact.objects.values('user')]
+            self.create_dms(students)
+            self.create_dms(trainers)
+            self.create_dms(specialists)
+        elif user.contact_type == User.CONTACT.MODERATOR:
+            moderators = User.objects.filter(contact_type=User.CONTACT.MODERATOR)
+            trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER).exclude(pk=self.request.user.pk)
+            specialists = [User.objects.get(id=id_['user']) for id_ in SpecialContact.objects.values('user')]
+            students = User.objects.filter(contact_type=User.CONTACT.SPORTSMAN)
+            self.create_dms(moderators)
+            self.create_dms(trainers)
+            self.create_dms(specialists)
+            self.create_dms(students)
+        elif user.contact_type == User.CONTACT.SPORTSMAN:
+            specialists = [User.objects.get(id=id_['user']) for id_ in SpecialContact.objects.values('user')]
+            if user.trainer is not None:
+                self.create_dm(user.trainer)
+            self.create_dms(specialists)
+        elif user.contact_type == User.CONTACT.PARENT:
+            raise BadRequest('Parent not allowed to own chats')
+
+    def create_dms(self, users):
+        for user in users:
+            self.create_dm(user)
 
     def create_dm(self, obj):
         user = self.request.user
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
-        inter_chat = set(user.chats.filter(type=Chat.Type.DM)).intersection(obj.chats.filter(type=Chat.Type.DM))
-        if len(inter_chat) == 0:
+        if len(user.chats.filter(name=name)) == 0:
             chat = Chat.objects.create(
                 name=name,
                 type=Chat.Type.DM,

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 
 from authentication.models import User
 from chats.models import Message, Chat
@@ -45,12 +46,12 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class ChatSerializer(serializers.ModelSerializer):
     members = MemberSerializer(many=True, read_only=True)
+    owner = MemberSerializer(read_only=True)
     last_message = serializers.SerializerMethodField()
     unreaded_count = serializers.SerializerMethodField()
     display_name = serializers.SerializerMethodField()
     folder = serializers.SerializerMethodField()
     empty = serializers.SerializerMethodField()
-    owner = MemberSerializer(read_only=True)
 
     class Meta:
         model = Chat
@@ -72,7 +73,7 @@ class ChatSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context['request']
         data = request.data
-        user = request.user
+        user = self.get_user()
         members = data.get('members', [])
         chat = Chat.objects.create(
             name=validated_data["name"],
@@ -83,40 +84,57 @@ class ChatSerializer(serializers.ModelSerializer):
         return chat
 
     def get_folder(self, obj: Chat):
-        request = self.context['request']
-        user = request.user
+        user = self.get_user()
         if obj.type == Chat.Type.DM:
-            member = None
-            for _member in obj.members.all():
-                if _member != user:
-                    member = _member
+            member = self.get_another_chat_member(obj, user)
+
             if user.contact_type == User.CONTACT.TRAINER:
-                if member.contact_type == User.CONTACT.SPORTSMAN:
+                if member.trainer == user:
                     return 'students'
-            if user.contact_type == User.CONTACT.MODERATOR or user.contact_type == User.CONTACT.TRAINER:
+                if hasattr(member, 'special'):
+                    return 'specialists'
                 if member.contact_type == User.CONTACT.TRAINER:
                     return 'trainers'
-            if hasattr(member, 'special'):
-                return 'specialists'
-            if member.contact_type == User.CONTACT.MODERATOR and user.contact_type == User.CONTACT.MODERATOR:
-                return 'moderators'
-        elif obj.type == Chat.Type.AUTO:
-            return 'none'
-        elif obj.type == Chat.Type.CUSTOM:
-            return 'none'
+
+            elif user.contact_type == User.CONTACT.MODERATOR:
+                if member.contact_type == User.CONTACT.TRAINER:
+                    return 'trainers'
+                if member.contact_type == User.CONTACT.MODERATOR:
+                    return 'moderators'
+                if member.contact_type == User.CONTACT.SPORTSMAN:
+                    return 'students'
+                if hasattr(member, 'special'):
+                    return 'specialists'
+
+            elif user.contact_type == User.CONTACT.SPORTSMAN:
+                if hasattr(member, 'special'):
+                    return 'specialists'
+
         return 'none'
 
+    def get_another_chat_member(self, chat, user) -> User:
+        for _member in chat.members.all():
+            if _member != user:
+                return _member
     def get_empty(self, obj: Chat):
+        user = self.get_user()
+        if self.get_another_chat_member(obj, user) == user.trainer:
+            return False
         folder = self.get_folder(obj)
         is_empty = len(obj.messages.all()) == 0
         if folder == 'none' and is_empty and obj.type == Chat.Type.DM:
             return True
         return False
 
+    def get_user(self):
+        child_id = self.context['child_id']
+        if self.context['child_id'] is not None:
+            return get_object_or_404(User, id=child_id)
+        return self.context['request'].user
+
     def get_display_name(self, obj: Chat):
         try:
-            request = self.context['request']
-            user = request.user
+            user = self.get_user()
         except Exception:
             return "Ошибка сервера"
         if obj.type == Chat.Type.DM:
@@ -148,8 +166,7 @@ class ChatSerializer(serializers.ModelSerializer):
         return MessageSerializer(message, context=self.context).data
 
     def get_unreaded_count(self, obj):
-        request = self.context['request']
-        user = request.user
+        user = self.get_user()
         return self.get_user_unreaded_count(user, obj)
 
     def get_user_unreaded_count(self, user: User, chat: Chat):

@@ -1,14 +1,13 @@
 import base64
 import json
 
-from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.files.base import ContentFile
 
-from grandmaster.settings import HOST
 from authentication.models import User
-from chats.models import Message, Chat, Room
+from chats.models import Message, Chat
+from grandmaster.settings import HOST
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
