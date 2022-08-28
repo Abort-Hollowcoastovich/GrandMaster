@@ -51,7 +51,6 @@ class ChatSerializer(serializers.ModelSerializer):
     unreaded_count = serializers.SerializerMethodField()
     display_name = serializers.SerializerMethodField()
     folder = serializers.SerializerMethodField()
-    empty = serializers.SerializerMethodField()
 
     class Meta:
         model = Chat
@@ -66,7 +65,6 @@ class ChatSerializer(serializers.ModelSerializer):
             "unreaded_count",
             "folder",
             "name",
-            "empty",
         ]
         read_only_fields = ["messages", "last_message"]
 
@@ -117,15 +115,6 @@ class ChatSerializer(serializers.ModelSerializer):
         for _member in chat.members.all():
             if _member != user:
                 return _member
-    def get_empty(self, obj: Chat):
-        user = self.get_user()
-        if self.get_another_chat_member(obj, user) == user.trainer:
-            return False
-        folder = self.get_folder(obj)
-        is_empty = len(obj.messages.all()) == 0
-        if folder == 'none' and is_empty and obj.type == Chat.Type.DM:
-            return True
-        return False
 
     def get_user(self):
         child_id = self.context['child_id']

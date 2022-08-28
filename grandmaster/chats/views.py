@@ -17,6 +17,58 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ChatSerializer
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        chats = filter(self.is_not_empty, queryset)
+        serializer = self.get_serializer(chats, many=True)
+        return Response(serializer.data)
+
+    def is_not_empty(self, chat):
+        user = self.request.user
+        if user.contact_type == User.CONTACT.PARENT:
+            user = self.get_child()
+        if self.get_another_chat_member(chat, user) == user.trainer:
+            return True
+        folder = self.get_folder(chat, user)
+        is_empty = len(chat.messages.all()) == 0
+        if folder == 'none' and is_empty and chat.type == Chat.Type.DM:
+            return False
+        return True
+
+    def get_folder(self, obj: Chat, user):
+        if obj.type == Chat.Type.DM:
+            member = self.get_another_chat_member(obj, user)
+            if member is None:
+                return 'none'
+            if user.contact_type == User.CONTACT.TRAINER:
+                if member.trainer == user:
+                    return 'students'
+                if hasattr(member, 'special'):
+                    return 'specialists'
+                if member.contact_type == User.CONTACT.TRAINER:
+                    return 'trainers'
+
+            elif user.contact_type == User.CONTACT.MODERATOR:
+                if member.contact_type == User.CONTACT.TRAINER:
+                    return 'trainers'
+                if member.contact_type == User.CONTACT.MODERATOR:
+                    return 'moderators'
+                if member.contact_type == User.CONTACT.SPORTSMAN:
+                    return 'students'
+                if hasattr(member, 'special'):
+                    return 'specialists'
+
+            elif user.contact_type == User.CONTACT.SPORTSMAN:
+                if hasattr(member, 'special'):
+                    return 'specialists'
+
+        return 'none'
+
+    def get_another_chat_member(self, chat, user) -> User:
+        for _member in chat.members.all():
+            if _member != user:
+                return _member
+
     def get_queryset(self):
         user = self.request.user
         if user.contact_type == User.CONTACT.PARENT:
@@ -29,7 +81,6 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
         params = self.request.query_params
         child_id = params.get('id', None)
         context['child_id'] = child_id
-        print(context)
         return context
 
     def get_child(self):
