@@ -10,7 +10,7 @@ User = get_user_model()
 
 class UserAdmin(BaseUserAdmin):
     # То, что отображается в просмотре в виде списка
-    list_display = ('phone_number', 'admin',)
+    list_display = ('phone_number', 'full_name', 'contact_type')
     # То, по чему можно фильтровать этот список
     list_filter = ('active', 'admin',)
     # Поля при просмотре конкретного объекта
@@ -32,9 +32,12 @@ class UserAdmin(BaseUserAdmin):
     )
 
     # Поля, по которым можно сортировать при просмотре в виде списка
-    search_fields = ('phone_number', )
+    search_fields = ('phone_number', 'first_name', 'last_name', 'middle_name')
     # Поля, по которым идет порядок просмотра в виде списка
     ordering = ('phone_number', )
+
+    def full_name(self, obj):
+        return obj.full_name
 
     def get_inline_instances(self, request, obj=None):
         if not obj:
