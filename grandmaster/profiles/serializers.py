@@ -52,7 +52,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     def get_children(self, obj: User):
         if obj.contact_type == User.CONTACT.TRAINER:
             return []
-        return UserSerializer(obj.children, many=True, context=self.context)
+        return UserSerializer(obj.children, many=True, context=self.context).data
 
     def get_dm(self, obj):
         request: Request = self.context['request']
