@@ -12,7 +12,8 @@ class VideoViewSet(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
-            return Video.objects.all()
+        if user.is_authenticated:
+            if User.Group.ADMINISTRATOR in user or User.Group.MODERATOR in user:
+                return Video.objects.all()
         return Video.objects.filter(hidden=False)
 
