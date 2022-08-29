@@ -30,7 +30,7 @@ def webhook(request):
             return Response(status=400, data={f'no such user'})
         return Response(status=200)
     elif event == 'ONCRMCONTACTCREATE':
-        logger.info(f'user created id:{_id}')
+        print(f'user created id:{_id}')
     else:
         logger.info(f'not bitrix update event: event:{event}, id:{_id}')
     return Response(status=200)
