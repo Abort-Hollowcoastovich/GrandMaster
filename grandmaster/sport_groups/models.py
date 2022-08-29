@@ -54,17 +54,7 @@ def members_changed(sender, **kwargs):
     instance = kwargs['instance']
     members = list(instance.members.all())
     members.append(instance.trainer)
-    if instance.chat is None:
-        chat = Chat.objects.create(
-            name=instance.name,
-            type=Chat.Type.AUTO,
-            owner=instance.trainer
-        )
-        members = list(instance.members.all())
-        members.append(instance.trainer)
-        chat.members.set(members)
-        chat.save()
-        instance.chat = chat
+    instance.chat.members.set(members)
     instance.save()
 
 
