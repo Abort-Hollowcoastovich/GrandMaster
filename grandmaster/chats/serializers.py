@@ -80,6 +80,7 @@ class ChatSerializer(serializers.ModelSerializer):
         )
         members.append(user.id)
         chat.members.set(members)
+        chat.save()
         return chat
 
     def get_folder(self, obj: Chat):

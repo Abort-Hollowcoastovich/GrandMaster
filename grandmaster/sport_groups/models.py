@@ -45,6 +45,7 @@ def sport_group_save_handler(sender, **kwargs):
         members = list(instance.members.all())
         members.append(instance.trainer)
         chat.members.set(members)
+        chat.save()
         instance.chat = chat
         instance.save()
 
@@ -62,6 +63,7 @@ def members_changed(sender, **kwargs):
         members = list(instance.members.all())
         members.append(instance.trainer)
         chat.members.set(members)
+        chat.save()
         instance.chat = chat
     instance.save()
 

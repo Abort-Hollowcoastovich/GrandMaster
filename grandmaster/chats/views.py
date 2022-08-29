@@ -135,6 +135,7 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
                 owner=None
             )
             chat.members.set(members)
+            chat.save()
 
 
 # todo: change perms

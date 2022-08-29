@@ -72,6 +72,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
                 owner=None
             )
             chat.members.set(members)
+            chat.save()
             return chat.id
         else:
             return chat.first().id
