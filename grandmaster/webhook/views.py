@@ -18,6 +18,7 @@ def webhook(request):
         params = parse_qs(unquote(s))
         event = params['event'][0]
         _id = params['data[FIELDS][ID]'][0]
+        print(event, _id)
     except Exception:
         raise BadRequest
     if event == 'ONCRMCONTACTUPDATE':
