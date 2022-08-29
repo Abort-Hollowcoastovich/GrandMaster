@@ -28,14 +28,14 @@ class ValidatePhoneSendOTP(APIView):
                 if last.count > MAX_SEND_TIMES:
                     return Response({
                         'status': False,
-                        'details': 'Code send request limit exceeded, contact customer support.'
-                    }, status=status.HTTP_423_LOCKED)
+                        'details': 'За последнее время вы проходили авторизацию слишко много раз, обратитесь к поддержке'
+                    }, status=status.HTTP_400_BAD_REQUEST)
                 elif timezone.now() - last.last_modified < datetime.timedelta(
                         seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK):
                     return Response({
                         'status': False,
-                        'details': f'Wait {SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK} seconds to request new code'
-                    }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+                        'details': f'Дождитесь {SECONDS_DELAY_BETWEEN_REQUESTS_TO_LOCK} секунд для получения нового кода'
+                    }, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     if timezone.now() - last.last_modified < datetime.timedelta(
                             seconds=SECONDS_DELAY_BETWEEN_REQUESTS_TO_INCREMENT):
@@ -46,7 +46,7 @@ class ValidatePhoneSendOTP(APIView):
                     send_sms_code(phone_number, code)
                     return Response({
                         'status': True,
-                        'details': 'Successfully sent code'
+                        'details': 'Успешно отправлен код'
                     }, status=status.HTTP_200_OK)
             else:
                 if is_exists_on_bitrix(phone_number):
@@ -57,17 +57,17 @@ class ValidatePhoneSendOTP(APIView):
                     send_sms_code(phone_number, code)
                     return Response({
                         'status': True,
-                        'details': 'Successfully sent code'
+                        'details': 'Успешно отправлен код'
                     }, status=status.HTTP_200_OK)
                 else:
                     return Response({
                         'status': True,
-                        'details': 'Such number does not exists'
+                        'details': 'Данный телефонный номер недействителен, обратитесь в поддержку'
                     }, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({
                 'status': False,
-                'details': 'Phone number is not given in request'
+                'details': 'Необходимо указать телефонный номер'
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -101,27 +101,27 @@ class ValidateOTP(APIView):
                         else:
                             return Response({
                                 'status': False,
-                                'details': 'Your code has expired'
+                                'details': 'Время действия данного кода истекло'
                             }, status=status.HTTP_400_BAD_REQUEST)
                     else:
                         return Response({
                             'status': False,
-                            'details': 'Wrong code'
+                            'details': 'Неверный код'
                         }, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response({
                         'status': False,
-                        'details': 'You can not use same otp more then once, get new code and try again'
+                        'details': 'Вы не можете использовать один код несколько раз'
                     }, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({
                     'status': False,
-                    'details': 'You must validate phone and send code first'
+                    'details': 'Сначала необходимо получить код'
                 }, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({
                 'status': False,
-                'details': 'You must specify phone number and code'
+                'details': 'Необходимо указать код и номер телефона'
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
