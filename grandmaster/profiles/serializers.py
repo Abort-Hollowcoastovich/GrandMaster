@@ -48,11 +48,19 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     parents = UserSerializer(many=True)
     children = serializers.SerializerMethodField()
     dm = serializers.SerializerMethodField()
+    phone_number = serializers.SerializerMethodField()
 
     def get_children(self, obj: User):
         if obj.contact_type == User.CONTACT.TRAINER:
             return []
         return UserSerializer(obj.children, many=True, context=self.context).data
+
+    def get_phone_number(self, obj: User):
+        # +7 (123) 123-12-12
+        raw_phone = obj.phone_number
+        if len(raw_phone) == 12:
+            return raw_phone[:2] + '(' + raw_phone[2:5] + ')' + raw_phone[5:8] + '-' + raw_phone[8:10] + '-' + raw_phone[10:12]
+        return raw_phone
 
     def get_dm(self, obj):
         request: Request = self.context['request']
