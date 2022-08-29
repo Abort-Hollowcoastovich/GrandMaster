@@ -1,6 +1,7 @@
 import json
 from json import JSONDecodeError
 
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -19,11 +20,30 @@ class EventMembersSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     members = serializers.SerializerMethodField()
+    ended = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
-        fields = '__all__'
+        fields = [
+            'id',
+            'members',
+            'name',
+            'description',
+            'address',
+            'start_date',
+            'end_date',
+            'deadline_date',
+            'cover',
+            'open',
+            'hidden',
+            'number',
+            'ended',
+        ]
         read_only_fields = ['id']
+
+    def get_ended(self, obj):
+        now = timezone.now()
+        return now > obj.deadline_date
 
     def update(self, instance, validated_data):
         members = self.get_items(validated_data, 'members')
