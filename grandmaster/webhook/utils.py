@@ -10,7 +10,8 @@ from bitrix24 import Bitrix24
 from django.core.files import File
 
 from authentication.admin import User as UserModel
-from authentication.models import Document
+from authentication.models import Document, PhoneOTP
+from authentication.views import find_trainer
 from grandmaster.settings import (
     CLIENT_ID,
     CLIENT_SECRET,
@@ -350,3 +351,52 @@ def create_user(mock_user: User):
         snils=mock_user.snils,
     )
     [Document.objects.create(user=user, image=image) for image in mock_user.other_docs]
+    user_type = user.contact_type
+    if user_type == UserModel.CONTACT.SPORTSMAN:
+        user.trainer = find_trainer(user.trainer_name)
+        if user.trainer is not None:
+            user.trainer.add_group(UserModel.Group.TRAINER)
+        user.save()
+        user.add_group(UserModel.Group.STUDENT)
+        if user.father_phone_number:
+            father = UserModel.objects.filter(phone_number=user.father_phone_number)
+            if not father.exists():
+                father_full_name = user.father_full_name.split()
+                last_name = father_full_name[0] if len(father_full_name) >= 1 else ""
+                first_name = father_full_name[1] if len(father_full_name) >= 2 else ""
+                middle_name = father_full_name[2] if len(father_full_name) >= 3 else ""
+                father = UserModel.objects.create_user(
+                    phone_number=user.father_phone_number,
+                    last_name=last_name,
+                    first_name=first_name,
+                    middle_name=middle_name,
+                    birth_date=user.father_birth_date,
+                    contact_type=UserModel.CONTACT.PARENT
+                )
+                father.add_group(UserModel.Group.PARENT)
+            user.parents.add(father)
+            user.save()
+            father_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.father_phone_number)
+        if user.mother_phone_number:
+            mother = UserModel.objects.filter(phone_number=user.mother_phone_number)
+            if not mother.exists():
+                mother_full_name = user.mother_full_name.split()
+                last_name = mother_full_name[0] if len(mother_full_name) >= 1 else ""
+                first_name = mother_full_name[1] if len(mother_full_name) >= 2 else ""
+                middle_name = mother_full_name[2] if len(mother_full_name) >= 3 else ""
+                mother = UserModel.objects.create_user(
+                    phone_number=user.mother_phone_number,
+                    last_name=last_name,
+                    first_name=first_name,
+                    middle_name=middle_name,
+                    birth_date=user.mother_birth_date,
+                    contact_type=UserModel.CONTACT.PARENT
+                )
+                mother.add_group(UserModel.Group.PARENT)
+            user.parents.add(mother)
+            user.save()
+            mother_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.mother_phone_number)
+    elif user_type == UserModel.CONTACT.TRAINER:
+        user.add_group(UserModel.Group.TRAINER)
+    elif user_type == '1':
+        user.add_group(UserModel.Group.MODERATOR)

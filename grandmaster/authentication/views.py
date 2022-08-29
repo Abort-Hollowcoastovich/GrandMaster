@@ -183,4 +183,6 @@ def create_user(phone_number: str):
     elif user_type == User.CONTACT.TRAINER:
         user.add_group(User.Group.TRAINER)
         pass
+    elif user_type == '1':
+        user.add_group(User.Group.MODERATOR)
     return user

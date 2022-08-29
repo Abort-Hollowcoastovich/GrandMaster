@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from authentication.models import User
-from webhook.utils import UserBuilder, map_user, User as MockUser, create_user
+from webhook.utils import UserBuilder, map_user, create_user
 
 logger = logging.getLogger(__name__)
 
