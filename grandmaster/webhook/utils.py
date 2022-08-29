@@ -10,6 +10,7 @@ from bitrix24 import Bitrix24
 from django.core.files import File
 
 from authentication.admin import User as UserModel
+from authentication.models import Document
 from grandmaster.settings import (
     CLIENT_ID,
     CLIENT_SECRET,
@@ -70,6 +71,7 @@ class User:
     inn: File
     diploma: File
     snils: File
+    other_docs: list
 
 
 class UserBuilder:
@@ -137,6 +139,7 @@ class UserBuilder:
             snils = self._load_file(self.bitrix_user['UF_CRM_CONTACT_1656320071632'][0])
         else:
             snils = self._load_file(self.bitrix_user['UF_CRM_CONTACT_1656320071632'])
+        other_docs = [self._load_file(urls) for urls in self.bitrix_user['UF_CRM_CONTACT_1656822613397']]
         return User(
             b24_id=b24_id,
             photo=photo,
@@ -179,6 +182,7 @@ class UserBuilder:
             inn=inn,
             diploma=diploma,
             snils=snils,
+            other_docs=other_docs
         )
 
     def _get_bitrix_user(self):
@@ -297,4 +301,52 @@ def map_user(user, mock_user):
     user.inn = mock_user.inn
     user.diploma = mock_user.diploma
     user.snils = mock_user.snils
+    [Document.objects.create(user=user, image=image) for image in mock_user.other_docs]
     user.save()
+
+
+def create_user(mock_user: User):
+    user = UserModel.objects.create_user(
+        b24_id=mock_user.b24_id,
+        photo=mock_user.photo,
+        gender=mock_user.gender,
+        first_name=mock_user.first_name,
+        last_name=mock_user.last_name,
+        middle_name=mock_user.middle_name,
+        birth_date=mock_user.birth_date,
+        contact_type=mock_user.contact_type,
+        phone_number=mock_user.phone_number,
+        sport_school=mock_user.sport_school,
+        department=mock_user.department,
+        trainer_name=mock_user.trainer_name,
+        training_place=mock_user.training_place,
+        tech_qualification=mock_user.tech_qualification,
+        sport_qualification=mock_user.sport_qualification,
+        weight=mock_user.weight,
+        height=mock_user.height,
+        region=mock_user.region,
+        city=mock_user.city,
+        address=mock_user.address,
+        school=mock_user.school,
+        med_certificate_date=mock_user.med_certificate_date,
+        insurance_policy_date=mock_user.insurance_policy_date,
+        father_full_name=mock_user.father_full_name,
+        father_birth_date=mock_user.father_birth_date,
+        father_phone_number=mock_user.father_phone_number,
+        father_email=mock_user.father_email,
+        mother_full_name=mock_user.mother_full_name,
+        mother_birth_date=mock_user.mother_birth_date,
+        mother_phone_number=mock_user.mother_phone_number,
+        mother_email=mock_user.mother_email,
+        passport_or_birth_certificate=mock_user.passport_or_birth_certificate,
+        oms_policy=mock_user.oms_policy,
+        school_ref=mock_user.school_ref,
+        insurance_policy=mock_user.insurance_policy,
+        tech_qual_diplo=mock_user.tech_qual_diplo,
+        med_certificate=mock_user.med_certificate,
+        foreign_passport=mock_user.foreign_passport,
+        inn=mock_user.inn,
+        diploma=mock_user.diploma,
+        snils=mock_user.snils,
+    )
+    [Document.objects.create(user=user, image=image) for image in mock_user.other_docs]

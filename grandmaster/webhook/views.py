@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from authentication.models import User
-from webhook.utils import UserBuilder, map_user
+from webhook.utils import UserBuilder, map_user, User as MockUser, create_user
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,8 @@ def webhook(request):
             return Response(status=400, data={f'no such user'})
         return Response(status=200)
     elif event == 'ONCRMCONTACTCREATE':
-        print(f'user created id:{_id}')
+        mock_user = UserBuilder(_id).build_user()
+        create_user(mock_user)
     else:
         logger.info(f'not bitrix update event: event:{event}, id:{_id}')
     return Response(status=200)
