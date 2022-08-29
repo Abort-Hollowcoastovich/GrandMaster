@@ -30,7 +30,7 @@ def webhook(request):
             logger.error(f"can't find user for bitrix id at webhook update: error: {e}")
             return Response(status=400, data={f'no such user'})
         return Response(status=200)
-    elif event == 'ONCRMCONTACTCREATE':
+    elif event == 'ONCRMCONTACTADD':
         mock_user = UserBuilder(_id).build_user()
         create_user(mock_user)
     else:
