@@ -21,7 +21,7 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         chats = filter(self.is_not_empty, queryset)
         serializer = self.get_serializer(chats, many=True)
-        return Response(serializer.data)
+        return Response(sorted(serializer.data, key=lambda x: x['display_name']))
 
     def is_not_empty(self, chat):
         user = self.request.user
