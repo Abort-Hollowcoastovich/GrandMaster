@@ -9,3 +9,7 @@ class SpecialContact(models.Model):
 
     def __str__(self):
         return f'{self.name} - {str(self.user)}'
+
+    class Meta:
+        verbose_name = 'Спец. контакт'
+        verbose_name_plural = 'Спец. контакты'

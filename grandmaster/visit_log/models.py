@@ -11,3 +11,5 @@ class VisitLog(models.Model):
 
     class Meta:
         db_table = 'visit_log'
+        verbose_name = 'Журнал посещений'
+        verbose_name_plural = 'Журналы посещений'

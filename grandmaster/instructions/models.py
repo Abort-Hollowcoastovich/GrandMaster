@@ -12,6 +12,8 @@ class Instruction(models.Model):
     class Meta:
         db_table = 'instructions'
         ordering = ['order', 'created_at']
+        verbose_name = 'Учебный материал'
+        verbose_name_plural = 'Учебные материалы'
 
     def __str__(self):
         return self.title

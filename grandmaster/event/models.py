@@ -19,6 +19,8 @@ class Event(models.Model):
     class Meta:
         db_table = 'events'
         ordering = ['number', 'start_date']
+        verbose_name = 'Мероприятие'
+        verbose_name_plural = 'Мероприятия'
 
     def __str__(self):
         return self.name

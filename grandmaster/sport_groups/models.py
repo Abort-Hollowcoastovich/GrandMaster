@@ -28,6 +28,8 @@ class SportGroup(models.Model):
         constraints = [
             models.CheckConstraint(check=Q(max_age__gte=F('min_age')), name='max_age_gte_min_age')
         ]
+        verbose_name = 'Спортивная группа'
+        verbose_name_plural = 'Спортивные группы'
 
 
 @receiver(post_save, sender=SportGroup)

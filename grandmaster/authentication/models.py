@@ -84,60 +84,60 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
     objects = UserManager()
 
-    b24_id = models.CharField(max_length=100, null=True)  # ID
-    photo = models.ImageField(upload_to=UserPathAndHash('photo'), null=True, blank=True)  # PHOTO
-    gender = models.CharField(max_length=100, null=True)  # HONORIFIC
-    first_name = models.CharField(max_length=100, null=True)  # NAME
-    last_name = models.CharField(max_length=100, null=True)  # LAST_NAME
-    middle_name = models.CharField(max_length=100, null=True)  # SECOND_NAME
-    birth_date = models.DateTimeField(null=True)  # BIRTHDATE
-    contact_type = models.CharField(max_length=100, null=True, blank=True)  # TYPE_ID
-    phone_number = models.CharField(max_length=100, unique=True)  # UF_CRM_1603290188
+    b24_id = models.CharField(max_length=100, null=True, verbose_name='id в битриксе')  # ID
+    photo = models.ImageField(upload_to=UserPathAndHash('photo'), null=True, blank=True, verbose_name='Фото')  # PHOTO
+    gender = models.CharField(max_length=100, null=True, verbose_name='Пол')  # HONORIFIC
+    first_name = models.CharField(max_length=100, null=True, verbose_name='Имя')  # NAME
+    last_name = models.CharField(max_length=100, null=True, verbose_name='Фамилия')  # LAST_NAME
+    middle_name = models.CharField(max_length=100, null=True, verbose_name='Отчество')  # SECOND_NAME
+    birth_date = models.DateTimeField(null=True, verbose_name='Дата рождения')  # BIRTHDATE
+    contact_type = models.CharField(max_length=100, null=True, blank=True, verbose_name='Тип контакта')  # TYPE_ID
+    phone_number = models.CharField(max_length=100, unique=True, verbose_name='Номер телефона')  # UF_CRM_1603290188
 
-    sport_school = models.CharField(max_length=200, null=True)  # UF_CRM_1602237440
-    department = models.CharField(max_length=100, null=True)  # UF_CRM_1602237201
-    trainer_name = models.CharField(max_length=100, null=True)  # UF_CRM_1568455087434
-    training_place = models.CharField(max_length=200, null=True)  # UF_CRM_1602445018
-    tech_qualification = models.CharField(max_length=100, null=True)  # UF_CRM_1602237683
-    sport_qualification = models.CharField(max_length=100, null=True)  # UF_CRM_1602237575
-    weight = models.IntegerField(null=True)  # UF_CRM_1602237818
-    height = models.IntegerField(null=True)  # UF_CRM_1602237890
+    sport_school = models.CharField(max_length=200, null=True, verbose_name='Спортивная школа')  # UF_CRM_1602237440
+    department = models.CharField(max_length=100, null=True, verbose_name='Департамент')  # UF_CRM_1602237201
+    trainer_name = models.CharField(max_length=100, null=True, verbose_name='ФИО тренера')  # UF_CRM_1568455087434
+    training_place = models.CharField(max_length=200, null=True, verbose_name='Место тренеровок')  # UF_CRM_1602445018
+    tech_qualification = models.CharField(max_length=100, null=True, verbose_name='Техническая квалификация')  # UF_CRM_1602237683
+    sport_qualification = models.CharField(max_length=100, null=True, verbose_name='Спортивная квалификация')  # UF_CRM_1602237575
+    weight = models.IntegerField(null=True, verbose_name='Вес')  # UF_CRM_1602237818
+    height = models.IntegerField(null=True, verbose_name='Рост')  # UF_CRM_1602237890
 
-    region = models.CharField(max_length=200, null=True)  # UF_CRM_1628160591
-    city = models.CharField(max_length=200, null=True)  # UF_CRM_1602233637
-    address = models.CharField(max_length=200, null=True)  # UF_CRM_1602233739
-    school = models.CharField(max_length=200, null=True)  # UF_CRM_1602234869
-    med_certificate_date = models.DateTimeField(null=True)  # UF_CRM_1602237971
-    insurance_policy_date = models.DateTimeField(null=True)  # UF_CRM_1602238043
+    region = models.CharField(max_length=200, null=True, verbose_name='Регион')  # UF_CRM_1628160591
+    city = models.CharField(max_length=200, null=True, verbose_name='Город')  # UF_CRM_1602233637
+    address = models.CharField(max_length=200, null=True, verbose_name='Адрес')  # UF_CRM_1602233739
+    school = models.CharField(max_length=200, null=True, verbose_name='Школа')  # UF_CRM_1602234869
+    med_certificate_date = models.DateTimeField(null=True, verbose_name='Дата окончания медицинской справки')  # UF_CRM_1602237971
+    insurance_policy_date = models.DateTimeField(null=True, verbose_name='Дата окончания страхового полиса')  # UF_CRM_1602238043
 
-    father_full_name = models.CharField(max_length=100, null=True)  # UF_CRM_1602238578
-    father_birth_date = models.DateTimeField(null=True)  # UF_CRM_1602241365
-    father_phone_number = models.CharField(max_length=100, null=True)  # UF_CRM_1602241669
-    father_email = models.EmailField(null=True)  # UF_CRM_1602241730
+    father_full_name = models.CharField(max_length=100, null=True, verbose_name='ФИО отца')  # UF_CRM_1602238578
+    father_birth_date = models.DateTimeField(null=True, verbose_name='Дата рождения отца')  # UF_CRM_1602241365
+    father_phone_number = models.CharField(max_length=100, null=True, verbose_name='Телефонный номер отца')  # UF_CRM_1602241669
+    father_email = models.EmailField(null=True, verbose_name='Email отца')  # UF_CRM_1602241730
 
-    mother_full_name = models.CharField(max_length=100, null=True)  # UF_CRM_1602241765
-    mother_birth_date = models.DateTimeField(null=True)  # UF_CRM_1602241804
-    mother_phone_number = models.CharField(max_length=100, null=True)  # UF_CRM_1602241833
-    mother_email = models.EmailField(null=True)  # UF_CRM_1602241870
+    mother_full_name = models.CharField(max_length=100, null=True, verbose_name='ФИО матери')  # UF_CRM_1602241765
+    mother_birth_date = models.DateTimeField(null=True, verbose_name='Дата рождения матери')  # UF_CRM_1602241804
+    mother_phone_number = models.CharField(max_length=100, null=True, verbose_name='Номер телефона матери')  # UF_CRM_1602241833
+    mother_email = models.EmailField(null=True, verbose_name='Email матери')  # UF_CRM_1602241870
 
     passport_or_birth_certificate = models.FileField(upload_to=DocumentsPathAndHash('passport_or_birth_certificate'),
-                                                     null=True)  # UF_CRM_1602238184
-    oms_policy = models.FileField(upload_to=DocumentsPathAndHash('oms_policy'), null=True)  # UF_CRM_1602238239
-    school_ref = models.FileField(upload_to=DocumentsPathAndHash('school_ref'), null=True)  # UF_CRM_1602238293
-    insurance_policy = models.FileField(upload_to=DocumentsPathAndHash('insurance_policy'),
+                                                     null=True, verbose_name='Паспорт или свидетельство о рождении')  # UF_CRM_1602238184
+    oms_policy = models.FileField(upload_to=DocumentsPathAndHash('oms_policy'), null=True, verbose_name='Полис')  # UF_CRM_1602238239
+    school_ref = models.FileField(upload_to=DocumentsPathAndHash('school_ref'), null=True, verbose_name='Справка со школы')  # UF_CRM_1602238293
+    insurance_policy = models.FileField(upload_to=DocumentsPathAndHash('insurance_policy'), verbose_name='Страховой полис',
                                         null=True)  # UF_CRM_1602238335
-    tech_qual_diplo = models.FileField(upload_to=DocumentsPathAndHash('tech_qual_diplo'),
+    tech_qual_diplo = models.FileField(upload_to=DocumentsPathAndHash('tech_qual_diplo'), verbose_name='Диплом о технической квалификации',
                                        null=True)  # UF_CRM_1602238381
-    med_certificate = models.FileField(upload_to=DocumentsPathAndHash('med_certificate'),
+    med_certificate = models.FileField(upload_to=DocumentsPathAndHash('med_certificate'), verbose_name='Медицинская справка',
                                        null=True)  # UF_CRM_1602238435
-    foreign_passport = models.FileField(upload_to=DocumentsPathAndHash('foreign_passport'),
+    foreign_passport = models.FileField(upload_to=DocumentsPathAndHash('foreign_passport'), verbose_name='Загран. паспорт',
                                         null=True)  # UF_CRM_1602238474
-    inn = models.FileField(upload_to=DocumentsPathAndHash('inn'), null=True)  # UF_CRM_CONTACT_1656319970203
-    diploma = models.FileField(upload_to=DocumentsPathAndHash('diploma'), null=True)  # UF_CRM_CONTACT_1656319776732
-    snils = models.FileField(upload_to=DocumentsPathAndHash('snils'), null=True)  # UF_CRM_CONTACT_1656320071632
+    inn = models.FileField(upload_to=DocumentsPathAndHash('inn'), null=True, verbose_name='ИНН')  # UF_CRM_CONTACT_1656319970203
+    diploma = models.FileField(upload_to=DocumentsPathAndHash('diploma'), null=True, verbose_name='Диплом')  # UF_CRM_CONTACT_1656319776732
+    snils = models.FileField(upload_to=DocumentsPathAndHash('snils'), null=True, verbose_name='Снилс')  # UF_CRM_CONTACT_1656320071632
 
-    parents = models.ManyToManyField('self', related_name='children', symmetrical=False, blank=True)
-    trainer = models.ForeignKey('self', related_name='students', on_delete=models.SET_NULL, null=True, blank=True)  # UF_CRM_1568455087434
+    parents = models.ManyToManyField('self', related_name='children', symmetrical=False, blank=True, verbose_name='Родители')
+    trainer = models.ForeignKey('self', related_name='students', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Тренер')  # UF_CRM_1568455087434
 
     def __contains__(self, group_name):
         # Example: User.Group.PARENT in user_object
@@ -201,13 +201,19 @@ class User(AbstractBaseUser, PermissionsMixin):
             return self.active and bool(self.contact_type.strip())
         return False
 
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
 
 class Document(models.Model):
-    user = models.ForeignKey(to=User, related_name='other_documents', on_delete=models.CASCADE)
-    image = models.FileField(upload_to=DocumentsPathAndHash('other'))
+    user = models.ForeignKey(to=User, related_name='other_documents', on_delete=models.CASCADE, verbose_name='Пользователь')
+    image = models.FileField(upload_to=DocumentsPathAndHash('other'), verbose_name='Документ')
 
     class Meta:
         db_table = 'documents'
+        verbose_name = 'Документ'
+        verbose_name_plural = 'Документы'
 
 
 class PhoneOTP(models.Model):
@@ -215,11 +221,11 @@ class PhoneOTP(models.Model):
         regex=r'^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}',
         message='Phone number must be entered in the format: ...',
     )
-    phone_number = models.CharField(validators=[phone_regex], max_length=12, unique=True)
-    otp = models.CharField(max_length=9, blank=True, null=True)
-    count = models.IntegerField(default=0)
-    last_modified = models.DateTimeField(auto_now=True)
-    used = models.BooleanField(default=False)
+    phone_number = models.CharField(validators=[phone_regex], max_length=12, unique=True, verbose_name='Телефонный номер')
+    otp = models.CharField(max_length=9, blank=True, null=True, verbose_name='Код')
+    count = models.IntegerField(default=0, verbose_name='Счетчик активаций')
+    last_modified = models.DateTimeField(auto_now=True, verbose_name='Последнее обновление')
+    used = models.BooleanField(default=False, verbose_name='Использован')
 
     def __str__(self) -> str:
         return str(self.phone_number) + 'is sent' + str(self.count)
@@ -227,3 +233,8 @@ class PhoneOTP(models.Model):
     @property
     def is_used(self):
         return self.used
+
+    class Meta:
+        verbose_name = 'Телефонный код'
+        verbose_name_plural = 'Телефонные коды'
+

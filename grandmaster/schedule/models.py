@@ -22,6 +22,8 @@ class Schedule(models.Model):
 
     class Meta:
         db_table = 'schedules'
+        verbose_name = 'Расписание'
+        verbose_name_plural = 'Расписания'
 
     def __str__(self):
         return f'weekday:{self.weekday} gym_id:{self.gym.id} sport_group_id:{self.sport_group.id}'

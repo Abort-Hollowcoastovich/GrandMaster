@@ -20,6 +20,10 @@ class PayAccount(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Юридическое лицо'
+        verbose_name_plural = 'Юридические лица'
+
 
 def validate_min(value: timedelta):
     if value < timedelta(days=30):
@@ -47,6 +51,10 @@ class Bill(models.Model):
                                                                                               self.activated_at)
         else:
             return self._must_be_paid_at
+
+    class Meta:
+        verbose_name = 'Счет'
+        verbose_name_plural = 'Счета'
 
     def __str__(self):
         return f'{self.service} {self.purpose}'
@@ -94,6 +102,10 @@ class UserBill(models.Model):
     def __str__(self):
         return f'{self.bill.purpose}. Счет № {self.user_bill_number}/{self.bill.pay_account.id}-' \
                f'{self.pay_account_bill_number}'
+
+    class Meta:
+        verbose_name = 'Счет пользователя'
+        verbose_name_plural = 'Счета пользователя'
 
 
 @receiver(post_init, sender=UserBill)

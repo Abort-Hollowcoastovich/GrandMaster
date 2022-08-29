@@ -11,6 +11,8 @@ class Content(models.Model):
 
     class Meta:
         db_table = 'club_content'
+        verbose_name = 'Контент о клубе'
+        verbose_name_plural = 'Контент о клубах'
 
     def __str__(self):
         return self.name

@@ -21,6 +21,8 @@ class News(models.Model):
     class Meta:
         db_table = 'news'
         ordering = ['order', '-created_at']
+        verbose_name = 'Новость'
+        verbose_name_plural = 'Новости'
 
     def __str__(self):
         return self.title
@@ -32,3 +34,5 @@ class NewsImage(models.Model):
 
     class Meta:
         db_table = 'news_images'
+        verbose_name = 'Изображение новости'
+        verbose_name_plural = 'Изображения новостей'

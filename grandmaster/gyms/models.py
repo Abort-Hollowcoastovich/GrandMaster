@@ -24,3 +24,5 @@ class Gym(models.Model):
     class Meta:
         db_table = 'gyms'
         ordering = ['order']
+        verbose_name = 'Зал'
+        verbose_name_plural = 'Залы'

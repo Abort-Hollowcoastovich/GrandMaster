@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from sport_groups.models import SportGroup
+
+admin.site.register(SportGroup)

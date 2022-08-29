@@ -24,6 +24,10 @@ class Chat(models.Model):
     def __str__(self):
         return f"Room({self.name})"
 
+    class Meta:
+        verbose_name = 'Чат'
+        verbose_name_plural = 'Чаты'
+
 
 class Message(models.Model):
     chat = models.ForeignKey(to=Chat, related_name='messages', on_delete=models.CASCADE)
@@ -36,3 +40,7 @@ class Message(models.Model):
 
     def __str__(self):
         return f'Message({self.chat} {self.author})'
+
+    class Meta:
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'Сообщения'

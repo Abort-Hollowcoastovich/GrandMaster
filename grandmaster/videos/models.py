@@ -11,6 +11,8 @@ class Video(models.Model):
     class Meta:
         db_table = 'videos'
         ordering = ['order', 'created_at']
+        verbose_name = 'Видео'
+        verbose_name_plural = 'Видео'
 
     def __str__(self):
         return self.title
