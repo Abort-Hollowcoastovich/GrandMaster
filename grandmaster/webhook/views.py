@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @api_view(['GET', 'POST'])
-def ebhook(request):
+def webhook(request):
     try:
         s = request.body.decode('utf8')
         params = parse_qs(unquote(s))
