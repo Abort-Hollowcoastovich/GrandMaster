@@ -1,3 +1,4 @@
+from django.core.exceptions import BadRequest
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
@@ -77,7 +78,7 @@ class ChatSerializer(serializers.ModelSerializer):
             name=validated_data["name"],
             owner=user
         )
-        members.append(self.context['request'].user.id)
+        members.append(user.id)
         chat.members.set(members)
         return chat
 
@@ -117,10 +118,14 @@ class ChatSerializer(serializers.ModelSerializer):
                 return _member
 
     def get_user(self):
-        child_id = self.context['child_id']
-        if self.context['child_id'] is not None:
-            return get_object_or_404(User, id=child_id)
-        return self.context['request'].user
+        user = self.context['request'].user
+        if user.contact_type == User.CONTACT.PARENT:
+            child_id = self.context['child_id']
+            if self.context['child_id'] is not None:
+                return get_object_or_404(User, id=child_id)
+            else:
+                raise BadRequest('Parent need to choose child')
+        return user
 
     def get_display_name(self, obj: Chat):
         try:
@@ -137,6 +142,7 @@ class ChatSerializer(serializers.ModelSerializer):
                         return member.full_name
                 return obj.name
             else:
+                print(obj, obj.members.all())
                 print('Chat error')
         elif obj.type == Chat.Type.AUTO:
             return obj.name

@@ -60,17 +60,18 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             return None
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
-        inter_chat = set(user.chats.filter(type=Chat.Type.DM)).intersection(obj.chats.filter(type=Chat.Type.DM))
-        if len(inter_chat) > 0:
-            chat = inter_chat.pop()
-        else:
+        chat = user.chats.filter(name=name)
+        if not chat.exists():
+            print(f'created dm {str(members)}')
             chat = Chat.objects.create(
                 name=name,
                 type=Chat.Type.DM,
                 owner=None
             )
             chat.members.set(members)
-        return chat.id
+            return chat.id
+        else:
+            return chat.first().id
 
     def get_special(self, obj):
         if hasattr(obj, 'special'):

@@ -127,7 +127,8 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
         user = self.request.user
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
-        if len(user.chats.filter(name=name)) == 0:
+        if not user.chats.filter(name=name).exists():
+            print(f'created dm {str(members)}')
             chat = Chat.objects.create(
                 name=name,
                 type=Chat.Type.DM,
