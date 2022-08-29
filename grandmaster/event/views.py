@@ -6,7 +6,7 @@ import xlsxwriter
 from django.core.exceptions import BadRequest
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError, NotFound
-from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -25,7 +25,7 @@ from .serializers import EventSerializer
 
 
 class EventViewSet(ModelViewSet):
-    permission_classes = [DjangoModelPermissions]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
     # pagination_class = StandardResultsSetPagination
     serializer_class = EventSerializer
 

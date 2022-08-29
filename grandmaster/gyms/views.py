@@ -1,5 +1,5 @@
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from authentication.models import User
@@ -9,7 +9,7 @@ from .serializers import GymSerializer
 
 class GymViewSet(ModelViewSet):
     serializer_class = GymSerializer
-    permission_classes = [DjangoModelPermissions]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         user = self.request.user

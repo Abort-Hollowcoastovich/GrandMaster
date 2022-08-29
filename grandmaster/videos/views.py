@@ -1,5 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 from .models import Video
 from .serializers import VideoSerializer
@@ -8,7 +8,7 @@ from authentication.models import User
 
 class VideoViewSet(ModelViewSet):
     serializer_class = VideoSerializer
-    permission_classes = [DjangoModelPermissions]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         user = self.request.user
