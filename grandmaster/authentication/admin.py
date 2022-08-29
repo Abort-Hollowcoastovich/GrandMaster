@@ -15,7 +15,18 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('active', 'admin',)
     # Поля при просмотре конкретного объекта
     fieldsets = (
-        (None, {'fields': ('phone_number', 'first_name', 'last_name', 'parents', 'trainer', 'contact_type', 'photo')}),
+        (None, {'fields': (
+            'phone_number',
+            'last_name',
+            'first_name',
+            'middle_name',
+            'contact_type',
+            'parents',
+            'father_phone_number',
+            'mother_phone_number',
+            'trainer',
+            'photo'
+        )}),
         ('Permissions', {'fields': ('admin', 'active', 'groups', 'user_permissions')}),
     )
 
