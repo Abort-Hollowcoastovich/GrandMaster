@@ -36,7 +36,7 @@ class SportGroup(models.Model):
 def sport_group_save_handler(sender, **kwargs):
     instance = kwargs['instance']
     created = kwargs['created']
-    if created:
+    if instance.chat is None:
         chat = Chat.objects.create(
             name=instance.name,
             type=Chat.Type.AUTO,
@@ -53,7 +53,16 @@ def members_changed(sender, **kwargs):
     instance = kwargs['instance']
     members = list(instance.members.all())
     members.append(instance.trainer)
-    instance.chat.members.set(members)
+    if instance.chat is None:
+        chat = Chat.objects.create(
+            name=instance.name,
+            type=Chat.Type.AUTO,
+            owner=instance.trainer
+        )
+        members = list(instance.members.all())
+        members.append(instance.trainer)
+        chat.members.set(members)
+        instance.chat = chat
     instance.save()
 
 
