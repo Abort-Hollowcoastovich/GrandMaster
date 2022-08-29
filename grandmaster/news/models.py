@@ -1,5 +1,6 @@
 from django.db import models
 
+from authentication.models import User
 from utils.image_path import PathAndHash
 
 
@@ -12,10 +13,10 @@ class News(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    viewed_times = models.IntegerField(default=0)
     order = models.IntegerField()
     hidden = models.BooleanField(default=False)
     cover = models.ImageField(upload_to=NewsPathAndHash('covers'))
+    viewers = models.ManyToManyField(to=User, blank=True)
 
     class Meta:
         db_table = 'news'

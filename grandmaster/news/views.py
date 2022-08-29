@@ -22,8 +22,10 @@ class NewsViewSet(ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.viewed_times += 1
-        instance.save()
+        user = request.user
+        if user.is_authenticated:
+            instance.viewers.add(user)
+            instance.save()
         serializer = NewsSerializer(instance=instance)
         return Response(serializer.data)
 

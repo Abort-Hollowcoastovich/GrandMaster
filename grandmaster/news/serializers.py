@@ -15,6 +15,7 @@ class NewsImagesSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     images = NewsImagesSerializer(many=True, read_only=True)
+    viewed_times = serializers.SerializerMethodField()
 
     class Meta:
         model = News
@@ -30,6 +31,9 @@ class NewsSerializer(serializers.ModelSerializer):
             'images'
         ]
         read_only_fields = ['id', 'viewed_times', 'created_at']
+
+    def get_viewed_times(self, obj):
+        return obj.viewers.all().count()
 
     def create(self, validated_data):
         images_data = self.context.get('view').request.FILES
