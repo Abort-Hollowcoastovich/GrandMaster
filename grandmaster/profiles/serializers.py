@@ -1,11 +1,9 @@
 from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
-from django.contrib.auth import get_user_model
 
 from chats.models import Chat
-
-User = get_user_model()
+from authentication.models import User
 
 
 class DocumentsDetailsSerializer(serializers.ModelSerializer):
@@ -48,8 +46,13 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     special = serializers.SerializerMethodField()
     admitted = serializers.BooleanField(source='is_admitted')
     parents = UserSerializer(many=True)
-    children = UserSerializer(many=True)
+    children = serializers.SerializerMethodField()
     dm = serializers.SerializerMethodField()
+
+    def get_children(self, obj: User):
+        if obj.contact_type == User.CONTACT.TRAINER:
+            return []
+        return UserSerializer(obj.children, many=True, context=self.context)
 
     def get_dm(self, obj):
         request: Request = self.context['request']
