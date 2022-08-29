@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from instructions.models import Instruction
+
+admin.site.register(Instruction)

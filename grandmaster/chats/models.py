@@ -36,11 +36,3 @@ class Message(models.Model):
 
     def __str__(self):
         return f'Message({self.chat} {self.author})'
-
-
-class Room(models.Model):
-    name = models.CharField(max_length=255, null=False, blank=False, unique=True)
-    members = models.ManyToManyField(User, related_name="current_rooms", blank=True)
-
-    def __str__(self):
-        return f"Room({self.name})"
