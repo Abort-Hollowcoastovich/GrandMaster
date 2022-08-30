@@ -36,7 +36,7 @@ class EventSerializer(serializers.ModelSerializer):
             'cover',
             'open',
             'hidden',
-            'number',
+            'order',
             'ended',
         ]
         read_only_fields = ['id']

@@ -13,12 +13,12 @@ class Event(models.Model):
     cover = models.ImageField(upload_to=PathAndHash('events/covers'), null=True)
     open = models.BooleanField(default=True)
     hidden = models.BooleanField(default=False)
-    number = models.IntegerField(default=0)
+    order = models.IntegerField(default=0)
     members = models.ManyToManyField(User, related_name='events')
 
     class Meta:
         db_table = 'events'
-        ordering = ['number', 'start_date']
+        ordering = ['order', 'start_date']
         verbose_name = 'Мероприятие'
         verbose_name_plural = 'Мероприятия'
 
