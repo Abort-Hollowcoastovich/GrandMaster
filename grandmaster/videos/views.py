@@ -30,7 +30,7 @@ def video_image(request: Request):
     id = params.get('id', None)
     if id is None:
         raise NotFound
-    url = f'https://img.youtube.com/vi/{id}/0.jpg'
+    url = f'https://img.youtube.com/vi/{id}/sddefault.jpg'
     response = requests.get(url)
     if response.status_code == 200:
         return HttpResponse(response.content, content_type='image/jpeg')
