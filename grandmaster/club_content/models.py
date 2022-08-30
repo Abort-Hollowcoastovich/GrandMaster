@@ -11,6 +11,7 @@ class Content(models.Model):
 
     class Meta:
         db_table = 'club_content'
+        ordering = ['number']
         verbose_name = 'Контент о клубе'
         verbose_name_plural = 'Контент о клубах'
 
