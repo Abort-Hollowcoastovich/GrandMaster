@@ -71,8 +71,8 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             return None
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
-        chat = user.chats.filter(name=name)
-        if not chat.exists():
+        reversed_name = f'dm_{obj.id}{user.id}'
+        if not user.chats.filter(name=name).exists() and not user.chats.filter(name=reversed_name).exists():
             print(f'created dm {str(members)}')
             chat = Chat.objects.create(
                 name=name,
@@ -83,7 +83,10 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             chat.save()
             return chat.id
         else:
-            return chat.first().id
+            chat = user.chats.filter(name=name)
+            if chat.exists():
+                return chat.first().id
+            return user.chats.filter(name=reversed_name).first().id
 
     def get_special(self, obj):
         if hasattr(obj, 'special'):

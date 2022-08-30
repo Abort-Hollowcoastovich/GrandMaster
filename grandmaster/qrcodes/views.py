@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from authentication.models import User
-from qrcodes.serializers import UserDetailsSerializer
+from profiles.serializers import UserDetailsSerializer
 
 
 class ForPartnersView(APIView):

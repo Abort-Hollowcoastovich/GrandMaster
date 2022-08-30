@@ -127,7 +127,8 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
         user = self.request.user
         members = [user.id, obj.id]
         name = f'dm_{user.id}{obj.id}'
-        if not user.chats.filter(name=name).exists():
+        reversed_name = f'dm_{obj.id}{user.id}'
+        if not user.chats.filter(name=name).exists() and not user.chats.filter(name=reversed_name).exists():
             print(f'created dm {str(members)}')
             chat = Chat.objects.create(
                 name=name,
