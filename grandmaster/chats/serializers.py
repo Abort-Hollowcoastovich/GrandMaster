@@ -120,7 +120,7 @@ class ChatSerializer(serializers.ModelSerializer):
 
     def get_user(self):
         user = self.context['request'].user
-        if user.contact_type == User.CONTACT.PARENT:
+        if user.children.all().exists():
             child_id = self.context['child_id']
             if self.context['child_id'] is not None:
                 return get_object_or_404(User, id=child_id)

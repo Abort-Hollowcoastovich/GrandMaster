@@ -25,7 +25,7 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
 
     def is_not_empty(self, chat):
         user = self.request.user
-        if user.contact_type == User.CONTACT.PARENT:
+        if user.children.all().exists():
             user = self.get_child()
         if self.get_another_chat_member(chat, user) == user.trainer:
             return True
@@ -71,7 +71,7 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.contact_type == User.CONTACT.PARENT:
+        if user.children.all().exists():
             user = self.get_child()
         self.check_chats_list(user)
         return user.chats.all()
@@ -116,7 +116,7 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
             if user.trainer is not None:
                 self.create_dm(user.trainer)
             self.create_dms(specialists)
-        elif user.contact_type == User.CONTACT.PARENT:
+        elif user.children.exists():
             raise BadRequest('Parent not allowed to own chats')
 
     def create_dms(self, users):
@@ -155,19 +155,29 @@ class MessageListView(generics.ListAPIView):
         chat_id = params.get('chat', None)
         if chat_id is None:
             raise NotFound
-        chat = Chat.objects.filter(id=chat_id)
-        if not chat.exists():
-            raise NotFound
-        return chat[0]
+        return get_object_or_404(Chat, id=chat_id)
+
+    def get_user(self) -> User:
+        user = self.request.user
+        params = self.request.query_params
+        if user.children.all().exists():
+            id_ = params.get('id', None)
+            if id_ is None:
+                raise BadRequest('Child not found')
+            child = get_object_or_404(User, id=id_)
+            if child not in user.children.all():
+                raise BadRequest('It is not your child')
+            return child
+        return user
 
     def get_queryset(self):
         chat = self.get_chat()
-        user = self.request.user
+        user = self.get_user()
         if chat not in user.chats.all():
-            raise PermissionDenied
+            raise PermissionDenied('You are not in this chat')
         messages = chat.messages.all().order_by('-created_at')
-        self.request.user.readed_messages.add(*messages)
-        self.request.user.save()
+        user.readed_messages.add(*messages)
+        user.save()
         return messages
 
 
