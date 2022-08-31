@@ -91,7 +91,10 @@ class UserBuilder:
         self._get_access_token()
 
         b24_id = self.b24_id
-        photo = self._load_file(self.bitrix_user['PHOTO'])
+        if 'PHOTO' in self.bitrix_user:
+            photo = self._load_file(self.bitrix_user['PHOTO'])
+        else:
+            photo = None
         gender = self.bitrix_user['HONORIFIC']
         first_name = self.bitrix_user['NAME']
         last_name = self.bitrix_user['LAST_NAME']
