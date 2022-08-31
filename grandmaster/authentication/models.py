@@ -156,16 +156,27 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 4. Не должно быть неоплаченных счетов с "Датой оплаты" текущая дата + 3 дня
     @property
     def is_admitted(self) -> bool:
-        return (bool(self.city) and
+        return (bool(self.photo) and
+                bool(self.first_name) and
+                bool(self.last_name) and
+                bool(self.middle_name) and
+                bool(self.birth_date) and
+                bool(self.trainer_name) and
+                bool(self.city) and
                 bool(self.address) and
+                bool(self.weight) and
+                bool(self.height) and
                 bool(self.med_certificate_date) and
                 bool(self.insurance_policy_date) and
                 (self.med_certificate_date - timezone.now() > timedelta(days=3)) and
                 (self.insurance_policy_date - timezone.now() > timedelta(days=3)) and
                 self.passport_or_birth_certificate and
-                self.oms_policy and
-                self.insurance_policy and
-                self.med_certificate and
+                bool(self.oms_policy) and
+                bool(self.insurance_policy) and
+                bool(self.med_certificate) and
+                bool(self.training_place) and
+                bool(self.phone_number) and
+                bool(self.region) and
                 not any([bill.is_blocked for bill in self.bills.all()]))
 
     @property

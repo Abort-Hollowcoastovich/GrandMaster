@@ -25,7 +25,7 @@ class UserAdmin(BaseUserAdmin):
             'father_phone_number',
             'mother_phone_number',
             'trainer',
-            'photo'
+            'photo',
         )}),
         ('Permissions', {'fields': ('admin', 'active', 'groups', 'user_permissions')}),
     )
