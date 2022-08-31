@@ -170,6 +170,13 @@ class MessageListView(generics.ListAPIView):
             return child
         return user
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        params = self.request.query_params
+        child_id = params.get('id', None)
+        context['child_id'] = child_id
+        return context
+
     def get_queryset(self):
         chat = self.get_chat()
         user = self.get_user()
@@ -200,6 +207,13 @@ class MembersListView(generics.ListAPIView):
             my_students = list(user.students.all())
             return sorted(my_students + trainers, key=lambda x: x.last_name)
         return User.objects.none()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        params = self.request.query_params
+        child_id = params.get('id', None)
+        context['child_id'] = child_id
+        return context
 
 
 def get_chat(params):
