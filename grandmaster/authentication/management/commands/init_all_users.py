@@ -24,7 +24,6 @@ class Command(BaseCommand):
                         create_user(mock_user)
                         print(f'created: {person["UF_CRM_1603290188"]} - {person["SECOND_NAME"]} {person["NAME"]} {person["LAST_NAME"]}')
                     except Exception as e:
-                        print(e.with_traceback())
                         print(f'ERROR {e} - {person["SECOND_NAME"]} {person["NAME"]} {person["LAST_NAME"]}')
 
 

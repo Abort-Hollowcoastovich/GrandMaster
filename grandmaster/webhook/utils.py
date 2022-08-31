@@ -375,6 +375,8 @@ def create_user(mock_user: User):
                     contact_type=UserModel.CONTACT.PARENT
                 )
                 father.add_group(UserModel.Group.PARENT)
+            else:
+                father = father.first()
             user.parents.add(father)
             user.save()
             father_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.father_phone_number)
@@ -394,6 +396,8 @@ def create_user(mock_user: User):
                     contact_type=UserModel.CONTACT.PARENT
                 )
                 mother.add_group(UserModel.Group.PARENT)
+            else:
+                mother = mother.first()
             user.parents.add(mother)
             user.save()
             mother_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.mother_phone_number)
