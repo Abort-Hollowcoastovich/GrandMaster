@@ -17,10 +17,10 @@ class Command(BaseCommand):
             for person in result:
                 id_ = person['ID']
                 if not User.objects.filter(b24_id=id_).exists():
+                    mock_user = UserBuilder(id_).build_user()
                     if User.objects.filter(phone_number=person['UF_CRM_1603290188']).exists():
-                        person['UF_CRM_1603290188'] = None
+                        mock_user.phone_number = None
                     try:
-                        mock_user = UserBuilder(id_).build_user()
                         create_user(mock_user)
                         print(f'created: {person["UF_CRM_1603290188"]} - {person["SECOND_NAME"]} {person["NAME"]} {person["LAST_NAME"]}')
                     except Exception as e:
