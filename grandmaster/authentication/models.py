@@ -11,14 +11,12 @@ from utils.image_path import PathAndHash
 class UserManager(BaseUserManager):
     def create_user(
             self,
-            phone_number,
+            phone_number=None,
             password=None,
             is_active=True,
             is_admin=False,
             **kwargs
     ):
-        if not phone_number:
-            raise ValueError("Users must have a phone number")
 
         user_obj = self.model(
             phone_number=phone_number,
@@ -92,7 +90,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     middle_name = models.CharField(max_length=100, null=True, verbose_name='Отчество')  # SECOND_NAME
     birth_date = models.DateTimeField(null=True, verbose_name='Дата рождения')  # BIRTHDATE
     contact_type = models.CharField(max_length=100, null=True, blank=True, verbose_name='Тип контакта')  # TYPE_ID
-    phone_number = models.CharField(max_length=100, unique=True, verbose_name='Номер телефона')  # UF_CRM_1603290188
+    phone_number = models.CharField(max_length=100, unique=True, verbose_name='Номер телефона', null=True, blank=True)  # UF_CRM_1603290188
 
     sport_school = models.CharField(max_length=200, null=True, verbose_name='Спортивная школа')  # UF_CRM_1602237440
     department = models.CharField(max_length=100, null=True, verbose_name='Департамент')  # UF_CRM_1602237201
