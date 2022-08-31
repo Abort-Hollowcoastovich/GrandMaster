@@ -163,7 +163,7 @@ class MessageListView(generics.ListAPIView):
         if user.children.all().exists():
             id_ = params.get('id', None)
             if id_ is None:
-                raise BadRequest('Child not found')
+                raise BadRequest('Need child id')
             child = get_object_or_404(User, id=id_)
             if child not in user.children.all():
                 raise BadRequest('It is not your child')
