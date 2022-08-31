@@ -21,9 +21,18 @@ class MemberSerializer(serializers.ModelSerializer):
             'me',
         ]
 
+    def get_user(self):
+        user = self.context['request'].user
+        if user.children.all().exists():
+            child_id = self.context['child_id']
+            if self.context['child_id'] is not None:
+                return get_object_or_404(User, id=child_id)
+            else:
+                raise BadRequest('Parent need to choose child')
+        return user
+
     def get_me(self, obj):
-        request = self.context['request']
-        user = request.user
+        user = self.get_user()
         if user.id == obj.id:
             return True
         return False
