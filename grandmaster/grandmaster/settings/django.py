@@ -122,21 +122,25 @@ LOGGING = {
         },
     },
     'handlers': {
+        'file': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': 'mysite.log'
+        },
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'INFO',
             'formatter': 'verbose'
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'propagate': True,
+            'handlers': ['file'],
             'level': 'ERROR',
+            'propagate': False,
         },
-        'MYAPP': {
-            'handlers': ['console'],
-            'level': 'ERROR',
+        'myapp': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False
         },
     }
 }
