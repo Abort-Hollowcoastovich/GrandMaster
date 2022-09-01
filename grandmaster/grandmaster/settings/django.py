@@ -109,41 +109,37 @@ AUTH_USER_MODEL = 'authentication.User'
 
 # LOGGING
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-#             'datefmt': "%d/%b/%Y %H:%M:%S"
-#         },
-#         'simple': {
-#             'format': '%(levelname)s %(message)s'
-#         },
-#     },
-#     'handlers': {
-#         'file': {
-#             'class': 'logging.handlers.WatchedFileHandler',
-#             'filename': 'mysite.log'
-#         },
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#             'level': 'ERROR',
-#             'formatter': 'verbose'
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'propagate': True,
-#             'level': 'ERROR',
-#         },
-#         'MYAPP': {
-#             'handlers': ['file'],
-#             'level': 'ERROR',
-#         },
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'ERROR',
+        },
+        'MYAPP': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+        },
+    }
+}
 
 # CHANNELS
 ASGI_APPLICATION = "grandmaster.asgi.application"
