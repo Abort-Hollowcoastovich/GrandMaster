@@ -14,6 +14,7 @@ class UserAdmin(BaseUserAdmin):
     # То, по чему можно фильтровать этот список
     list_filter = ('active', 'admin',)
     # Поля при просмотре конкретного объекта
+
     fieldsets = (
         (None, {'fields': (
             'phone_number',
@@ -26,6 +27,7 @@ class UserAdmin(BaseUserAdmin):
             'mother_phone_number',
             'trainer',
             'photo',
+            'special'
         )}),
         ('Permissions', {'fields': ('admin', 'active', 'groups', 'user_permissions')}),
     )

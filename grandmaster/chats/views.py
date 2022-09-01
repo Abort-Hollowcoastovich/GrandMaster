@@ -121,9 +121,11 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
         elif user.contact_type == User.CONTACT.SPECIALIST:
             moderators = User.objects.filter(contact_type=User.CONTACT.MODERATOR)
             trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER)
+            specialists = [User.objects.get(id=id_['user']) for id_ in SpecialContact.objects.values('user') if id_ != user.id]
             # students = User.objects.filter(contact_type=User.CONTACT.SPORTSMAN)
             self.create_dms(moderators)
             self.create_dms(trainers)
+            self.create_dms(specialists)
             # self.create_dms(students)
         elif user.children.exists():
             raise BadRequest('Parent not allowed to own chats')
