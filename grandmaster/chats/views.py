@@ -116,6 +116,13 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
             if user.trainer is not None:
                 self.create_dm(user.trainer)
             self.create_dms(specialists)
+        elif user.contact_type == User.CONTACT.SPECIALIST:
+            moderators = User.objects.filter(contact_type=User.CONTACT.MODERATOR)
+            trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER).exclude(pk=self.request.user.pk)
+            # students = User.objects.filter(contact_type=User.CONTACT.SPORTSMAN)
+            self.create_dms(moderators)
+            self.create_dms(trainers)
+            # self.create_dms(students)
         elif user.children.exists():
             raise BadRequest('Parent not allowed to own chats')
 
@@ -206,6 +213,12 @@ class MembersListView(generics.ListAPIView):
             ]))
             my_students = list(user.students.all())
             return sorted(my_students + trainers, key=lambda x: x.last_name)
+        elif user.contact_type == User.CONTACT.SPECIALIST:
+            return User.objects.filter(contact_type__in=[
+                User.CONTACT.MODERATOR,
+                User.CONTACT.TRAINER,
+                User.CONTACT.SPORTSMAN
+            ]).order_by('last_name', 'first_name', 'middle_name')
         return User.objects.none()
 
     def get_serializer_context(self):
