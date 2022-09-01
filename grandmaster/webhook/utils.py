@@ -360,6 +360,7 @@ def create_user(mock_user: User):
     user_type = user.contact_type
     if user_type == UserModel.CONTACT.SPORTSMAN:
         user.trainer = find_trainer(user.trainer_name)
+        print(user.trainer_name, user.trainer)
         if user.trainer is not None:
             user.trainer.add_group(UserModel.Group.TRAINER)
         user.save()

@@ -128,7 +128,7 @@ class ValidateOTP(APIView):
 def find_trainer(trainer_name: str):
     trainer = User.objects.filter(trainer_name=trainer_name, contact_type=User.CONTACT.TRAINER)
     if trainer.exists():
-        return trainer[0]
+        return trainer.first()
     trainer = get_trainer_from_bitrix(trainer_name)
     return trainer
 
