@@ -137,11 +137,11 @@ LOGGING = {
         'django': {
             'handlers': ['file'],
             'propagate': True,
-            'level': 'DEBUG',
+            'level': 'ERROR',
         },
         'MYAPP': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': 'ERROR',
         },
     }
 }

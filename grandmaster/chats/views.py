@@ -62,6 +62,8 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
                 if hasattr(member, 'special'):
                     return 'specialists'
 
+            # TODO: types for specialist
+
         return 'none'
 
     def get_another_chat_member(self, chat, user) -> User:
@@ -118,7 +120,7 @@ class ChatListView(generics.ListAPIView, generics.CreateAPIView):
             self.create_dms(specialists)
         elif user.contact_type == User.CONTACT.SPECIALIST:
             moderators = User.objects.filter(contact_type=User.CONTACT.MODERATOR)
-            trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER).exclude(pk=self.request.user.pk)
+            trainers = User.objects.filter(contact_type=User.CONTACT.TRAINER)
             # students = User.objects.filter(contact_type=User.CONTACT.SPORTSMAN)
             self.create_dms(moderators)
             self.create_dms(trainers)
