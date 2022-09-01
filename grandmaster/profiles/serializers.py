@@ -58,8 +58,9 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     def get_phone_number(self, obj: User):
         # +7 (123) 123-12-12
         raw_phone = obj.phone_number
-        if len(raw_phone) == 12:
-            return f'{raw_phone[:2]} ({raw_phone[2:5]}) {raw_phone[5:8]}-{raw_phone[8:10]}-{raw_phone[10:12]}'
+        if raw_phone is not None:
+            if len(raw_phone) == 12:
+                return f'{raw_phone[:2]} ({raw_phone[2:5]}) {raw_phone[5:8]}-{raw_phone[8:10]}-{raw_phone[10:12]}'
         return raw_phone
 
     def get_dm(self, obj):
