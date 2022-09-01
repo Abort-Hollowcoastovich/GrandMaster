@@ -20,6 +20,7 @@ from grandmaster.settings import (
     BITRIX_DOMAIN,
     MAX_TOKEN_REFRESH_TIMES,
 )
+from profiles.models import SpecialContact
 
 logger = logging.getLogger(__name__)
 
@@ -408,3 +409,4 @@ def create_user(mock_user: User):
         user.add_group(UserModel.Group.TRAINER)
     elif user_type == '1':
         user.add_group(UserModel.Group.MODERATOR)
+        SpecialContact.objects.create(user=user, name='Специалист')

@@ -69,6 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         TRAINER = "PARTNER"
         PARENT = "PARENT"
         MODERATOR = "MODERATOR"
+        SPECIALIST = "1"
 
     phone_regex = RegexValidator(
         regex=r"^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}",
