@@ -309,6 +309,13 @@ def map_user(user, mock_user):
     user.other_documents.all().delete()
     print('phone_number:', user.phone_number)
     [Document.objects.create(user=user, image=image) for image in mock_user.other_docs]
+
+    if user.contact_type == UserModel.CONTACT.SPORTSMAN:
+        user.trainer = find_trainer(user.trainer_name)
+        if user.trainer is not None:
+            user.trainer.add_group(UserModel.Group.TRAINER)
+        user.save()
+        user.add_group(UserModel.Group.STUDENT)
     user.save()
 
 
@@ -360,7 +367,6 @@ def create_user(mock_user: User):
     user_type = user.contact_type
     if user_type == UserModel.CONTACT.SPORTSMAN:
         user.trainer = find_trainer(user.trainer_name)
-        print(user.trainer_name, user.trainer)
         if user.trainer is not None:
             user.trainer.add_group(UserModel.Group.TRAINER)
         user.save()
