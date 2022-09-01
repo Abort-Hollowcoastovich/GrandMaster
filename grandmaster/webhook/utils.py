@@ -307,6 +307,7 @@ def map_user(user, mock_user):
     user.diploma = mock_user.diploma
     user.snils = mock_user.snils
     user.other_documents.all().delete()
+    print('phone_number:', user.phone_number)
     [Document.objects.create(user=user, image=image) for image in mock_user.other_docs]
     user.save()
 
