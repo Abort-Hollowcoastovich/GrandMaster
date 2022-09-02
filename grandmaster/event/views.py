@@ -109,7 +109,10 @@ def make_report(request: Request):
     data = []
     members = event.members.all()
     for member in members:
-        data.append([member.full_name, member.trainer.full_name])
+        if member.trainer:
+            data.append([member.full_name, member.trainer.full_name])
+        else:
+            data.append([member.full_name, 'Нет тренера'])
     headers = [['Спортсмен', 'Тренер']]
     filename = get_file_name('event_report.xlsx')
     filepath = os.path.join(os.path.join(os.path.join(MEDIA_ROOT, 'events'), 'reports'), filename)
