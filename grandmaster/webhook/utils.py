@@ -372,7 +372,19 @@ def create_user(mock_user: User):
         user.save()
         user.add_group(UserModel.Group.STUDENT)
         if user.father_phone_number:
-            father = UserModel.objects.filter(phone_number=user.father_phone_number)
+            father_full_name = user.father_full_name.split()
+            last_name = father_full_name[0] if len(father_full_name) >= 1 else ""
+            first_name = father_full_name[1] if len(father_full_name) >= 2 else ""
+            middle_name = father_full_name[2] if len(father_full_name) >= 3 else ""
+
+            father = UserModel.objects.filter(
+                phone_number=user.father_phone_number,
+            )
+            if father.exists():
+                pass
+            else:
+                pass
+
             if not father.exists():
                 father_full_name = user.father_full_name.split()
                 last_name = father_full_name[0] if len(father_full_name) >= 1 else ""

@@ -132,18 +132,18 @@ def make_report(request: Request):
         mark_datetime__gte=start_datetime,
         mark_datetime__lte=end_datetime,
     )
+    data = []
     for visit_log in visit_logs:
         date = visit_log.mark_datetime
         sport_group_name = visit_log.schedule.sport_group.name
         trainer_full_name = visit_log.schedule.sport_group.trainer.full_name
         students = visit_log.attending.all()
-        data = []
         for student in students:
             data.append([str(date), student.full_name, sport_group_name, trainer_full_name])
-        headers = ['Дата', 'Спортсмен', 'Спортивная группа', 'Тренер']
-        filename = get_file_name('report.xlsx')
-        filepath = os.path.join(os.path.join(MEDIA_ROOT, 'reports'), filename)
-        save_to_file(filepath, data, headers)
+    headers = ['Дата', 'Спортсмен', 'Спортивная группа', 'Тренер']
+    filename = get_file_name('report.xlsx')
+    filepath = os.path.join(os.path.join(MEDIA_ROOT, 'reports'), filename)
+    save_to_file(filepath, data, headers)
     return Response(data={'url': 'https://' + request.get_host() + MEDIA_URL + 'reports/' + filename}, status=200)
 
 
