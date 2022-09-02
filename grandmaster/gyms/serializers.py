@@ -19,10 +19,19 @@ class SchedulesSerializer(serializers.ModelSerializer):
 class TrainerSerializer(serializers.ModelSerializer):
     schedules = serializers.SerializerMethodField()
 
+    def sort_schedules(self, schedules):
+        result = []
+        for weekday in Schedule.WeekDay.choices:
+            items = schedules.filter(weekday=weekday)
+            if items.exists():
+                result.append(items.first())
+        return result
+
+
     def get_schedules(self, obj):
         gym_id = self.context['gym_id']
-        schedules = Schedule.objects.filter(sport_group__trainer=obj, gym_id=gym_id)
-        print(schedules, len(schedules))
+        schedules_raw = Schedule.objects.filter(sport_group__trainer=obj, gym_id=gym_id)
+        schedules = self.sort_schedules(schedules_raw)
         data = []
         grouped = dict()
         for obj in schedules:
