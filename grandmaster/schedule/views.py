@@ -135,6 +135,8 @@ class ScheduleView(APIView):
                 sport_group_id=sport_group_id,
                 weekday=weekday
             )
+            print(weekday, gym_id, sport_group_id)
+            print(items)
             if items.exists() and not times:
                 items.delete()
             elif not items.exists() and times:
