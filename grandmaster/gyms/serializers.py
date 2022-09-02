@@ -20,7 +20,8 @@ class TrainerSerializer(serializers.ModelSerializer):
     schedules = serializers.SerializerMethodField()
 
     def get_schedules(self, obj):
-        schedules = Schedule.objects.filter(sport_group__trainer=obj)
+        gym_id = self.context['gym_id']
+        schedules = Schedule.objects.filter(sport_group__trainer=obj, gym_id=gym_id)
         print(schedules, len(schedules))
         data = []
         grouped = dict()
@@ -60,7 +61,7 @@ class GymResponseSerializer(serializers.ModelSerializer):
 
     def get_trainers(self, obj):
         trainers = obj.trainers.all()
-        return [TrainerSerializer(trainer, context={'request': self.context['request']}).data for trainer in trainers]
+        return [TrainerSerializer(trainer, context={'request': self.context['request'], 'gym_id': obj.id}).data for trainer in trainers]
 
 
 class GymSerializer(serializers.ModelSerializer):
