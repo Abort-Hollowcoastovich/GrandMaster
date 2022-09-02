@@ -24,6 +24,7 @@ class TrainerSerializer(serializers.ModelSerializer):
         print('scedules', schedules)
         for weekday in Schedule.WeekDay.choices:
             items = schedules.filter(weekday=weekday)
+            print('items', items)
             if items.exists():
                 result.append(items.first())
         print('result', result)
