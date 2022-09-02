@@ -21,7 +21,6 @@ class TrainerSerializer(serializers.ModelSerializer):
 
     def get_schedules(self, obj):
         schedules = Schedule.objects.filter(sport_group__trainer=obj)
-        print(schedules, len(schedules))
         data = []
         grouped = dict()
         for obj in schedules:
