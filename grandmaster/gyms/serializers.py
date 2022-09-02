@@ -22,9 +22,9 @@ class TrainerSerializer(serializers.ModelSerializer):
     def sort_schedules(self, schedules):
         result = []
         print('scedules', schedules)
-        for weekday in Schedule.WeekDay.choices:
+        for weekday, _ in Schedule.WeekDay.choices:
             items = schedules.filter(weekday=weekday)
-            print('items', items)
+            print('items', items, weekday)
             if items.exists():
                 result.append(items.first())
         print('result', result)
