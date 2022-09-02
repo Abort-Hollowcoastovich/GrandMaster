@@ -59,7 +59,8 @@ class GymResponseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_trainers(self, obj):
-        print('trainers', obj)
+        trainers = obj.trainers.all()
+        return [TrainerSerializer(trainer, context={'request': self.context['request']}).data for trainer in trainers]
 
 
 class GymSerializer(serializers.ModelSerializer):
