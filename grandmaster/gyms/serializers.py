@@ -52,11 +52,15 @@ class TrainerSerializer(serializers.ModelSerializer):
 
 
 class GymResponseSerializer(serializers.ModelSerializer):
-    trainers = TrainerSerializer(many=True)
+    trainers = serializers.SerializerMethodField(many=True)
 
     class Meta:
         model = Gym
         fields = '__all__'
+
+    def get_trainers(self, obj):
+        print('gym', self.instance)
+        return TrainerSerializer(context={'request': self.context['request']})
 
 
 class GymSerializer(serializers.ModelSerializer):
