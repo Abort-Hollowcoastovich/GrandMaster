@@ -148,7 +148,7 @@ class ScheduleView(APIView):
             elif items.exists() and times:
                 print('times', times)
                 schedule = schedules[0]
-                print(schedule.finish_time, schedule.start_time)
+                print(schedule.id, schedule.start_time, schedule.finish_time)
                 schedule.start_time = times[0]
                 schedule.finish_time = times[1]
                 schedule.save()
