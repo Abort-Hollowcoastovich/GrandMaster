@@ -52,7 +52,7 @@ class TrainerSerializer(serializers.ModelSerializer):
 
 
 class GymResponseSerializer(serializers.ModelSerializer):
-    trainers = serializers.SerializerMethodField(many=True)
+    trainers = serializers.SerializerMethodField()
 
     class Meta:
         model = Gym
