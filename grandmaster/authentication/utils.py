@@ -179,12 +179,10 @@ def get_trainer_from_bitrix(trainer_name: str):
         'filter': {'TYPE_ID': 'PARTNER', 'NAME': name, 'SECOND_NAME': second_name, 'LAST_NAME': last_name},
     }
     result = b.call_webhook(method, '6ot3rs39vklb84zs', params)
-    print('trainer_:', result)  # may be QUERY_LIMIT_EXCEEDED error
     result = result['result']
     if not result:
         print('error to find: ', trainer_name)
         return
     else:
         result = result[0]
-    print('trainer_result', result)
     return get_user_from_bitrix(result)

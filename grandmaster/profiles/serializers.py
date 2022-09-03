@@ -49,6 +49,8 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
     dm = serializers.SerializerMethodField()
     phone_number = serializers.SerializerMethodField()
+    mother_phone_number = serializers.SerializerMethodField()
+    father_phone_number = serializers.SerializerMethodField()
 
     def get_children(self, obj: User):
         if obj.contact_type == User.CONTACT.TRAINER:
@@ -57,7 +59,15 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 
     def get_phone_number(self, obj: User):
         # +7 (123) 123-12-12
-        raw_phone = obj.phone_number
+        return self.format_phone_number(obj.phone_number)
+
+    def get_mother_phone_number(self, obj):
+        return self.format_phone_number(obj.mother_phone_number)
+
+    def get_father_phone_number(self, obj):
+        return self.format_phone_number(obj.father_phone_number)
+
+    def format_phone_number(self, raw_phone):
         if raw_phone is not None:
             if len(raw_phone) == 12:
                 return f'{raw_phone[:2]} ({raw_phone[2:5]}) {raw_phone[5:8]}-{raw_phone[8:10]}-{raw_phone[10:12]}'

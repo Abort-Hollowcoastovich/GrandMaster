@@ -25,6 +25,8 @@ class Command(BaseCommand):
                         print(f'created: {person["UF_CRM_1603290188"]} - {person["SECOND_NAME"]} {person["NAME"]} {person["LAST_NAME"]}')
                     except Exception as e:
                         print(f'ERROR {e} - {person["SECOND_NAME"]} {person["NAME"]} {person["LAST_NAME"]}')
+                else:
+                    print('Already exists with that b24 id')
 
 
 def fetch_users():

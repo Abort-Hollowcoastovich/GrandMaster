@@ -269,7 +269,7 @@ def map_user(user, mock_user):
     user.birth_date = mock_user.birth_date
     user.contact_type = mock_user.contact_type
     user.phone_number = mock_user.phone_number
-    # TODO: change gym and trainer
+
     user.sport_school = mock_user.sport_school
     user.department = mock_user.department
     user.trainer_name = mock_user.trainer_name
@@ -376,20 +376,16 @@ def create_user(mock_user: User):
             last_name = father_full_name[0] if len(father_full_name) >= 1 else ""
             first_name = father_full_name[1] if len(father_full_name) >= 2 else ""
             middle_name = father_full_name[2] if len(father_full_name) >= 3 else ""
-
-            father = UserModel.objects.filter(
+            father_query = UserModel.objects.filter(
                 phone_number=user.father_phone_number,
             )
-            if father.exists():
-                pass
+            if father_query.exists():
+                father = father_query.first()
+                if father != user:
+                    user.parents.add(father)
+                    user.save()
+                    father_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.father_phone_number)
             else:
-                pass
-
-            if not father.exists():
-                father_full_name = user.father_full_name.split()
-                last_name = father_full_name[0] if len(father_full_name) >= 1 else ""
-                first_name = father_full_name[1] if len(father_full_name) >= 2 else ""
-                middle_name = father_full_name[2] if len(father_full_name) >= 3 else ""
                 father = UserModel.objects.create_user(
                     phone_number=user.father_phone_number,
                     last_name=last_name,
@@ -399,18 +395,22 @@ def create_user(mock_user: User):
                     contact_type=UserModel.CONTACT.PARENT
                 )
                 father.add_group(UserModel.Group.PARENT)
-            else:
-                father = father.first()
-            user.parents.add(father)
-            user.save()
-            father_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.father_phone_number)
+                user.parents.add(father)
+                user.save()
+                father_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.father_phone_number)
         if user.mother_phone_number:
-            mother = UserModel.objects.filter(phone_number=user.mother_phone_number)
-            if not mother.exists():
-                mother_full_name = user.mother_full_name.split()
-                last_name = mother_full_name[0] if len(mother_full_name) >= 1 else ""
-                first_name = mother_full_name[1] if len(mother_full_name) >= 2 else ""
-                middle_name = mother_full_name[2] if len(mother_full_name) >= 3 else ""
+            mother_full_name = user.mother_full_name.split()
+            last_name = mother_full_name[0] if len(mother_full_name) >= 1 else ""
+            first_name = mother_full_name[1] if len(mother_full_name) >= 2 else ""
+            middle_name = mother_full_name[2] if len(mother_full_name) >= 3 else ""
+            mother_query = UserModel.objects.filter(phone_number=user.mother_phone_number)
+            if mother_query.exists():
+                mother = mother_query.first()
+                if mother != user:
+                    user.parents.add(mother)
+                    user.save()
+                    mother_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.mother_phone_number)
+            else:
                 mother = UserModel.objects.create_user(
                     phone_number=user.mother_phone_number,
                     last_name=last_name,
@@ -420,11 +420,9 @@ def create_user(mock_user: User):
                     contact_type=UserModel.CONTACT.PARENT
                 )
                 mother.add_group(UserModel.Group.PARENT)
-            else:
-                mother = mother.first()
-            user.parents.add(mother)
-            user.save()
-            mother_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.mother_phone_number)
+                user.parents.add(mother)
+                user.save()
+                mother_otp, _ = PhoneOTP.objects.get_or_create(phone_number=user.mother_phone_number)
     elif user_type == UserModel.CONTACT.TRAINER:
         user.add_group(UserModel.Group.TRAINER)
     elif user_type == '1':
