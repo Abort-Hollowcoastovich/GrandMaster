@@ -51,6 +51,13 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     phone_number = serializers.SerializerMethodField()
     mother_phone_number = serializers.SerializerMethodField()
     father_phone_number = serializers.SerializerMethodField()
+    is_my_student = serializers.SerializerMethodField()
+
+    def get_is_my_student(self, obj: User):
+        user = self.context['request'].user
+        if obj.trainer == user:
+            return True
+        return False
 
     def get_children(self, obj: User):
         if obj.contact_type == User.CONTACT.TRAINER:
@@ -145,6 +152,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'children',
             'parents',
             'dm',
+            'is_my_student',
         ]
 
 
